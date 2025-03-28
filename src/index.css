@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+    themes: light --default, halloween --prefersdark;
+}
+
+/* Hide scrollbar for all browsers */
+html, body {
+    scrollbar-width: none; /* Firefox */
+}
+
+/* Hide scrollbar for WebKit browsers (Chrome, Safari, Edge) */
+html::-webkit-scrollbar, 
+body::-webkit-scrollbar {
+    display: none;
+}
