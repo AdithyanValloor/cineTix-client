@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import ExhibitorSidebar from "../components/exhibitor/ExhibitorSidebar";
+import ExhibitorSidebar from "../components/Exhibitor/ExhibitorSidebar";
 import ExhibitorHeader from "../components/Exhibitor/ExhibitorHeader";
 
 const ExhibitorLayout = () => {
