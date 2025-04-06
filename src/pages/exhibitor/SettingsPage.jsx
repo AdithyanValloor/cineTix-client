@@ -19,7 +19,7 @@ function SettingsPage() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axiosInstance.get("/exhibitor/profile");
+        const res = await axiosInstance.get("/exhibitor/profile", {withCredentials: true});
         const data = res.data.data;
 
         console.log("RESPONSE : ", res.data.data.mobile);
@@ -49,7 +49,7 @@ function SettingsPage() {
     setMessage("");
 
     try {
-      const res = await axiosInstance.put("/exhibitor/update-profile", form);
+      const res = await axiosInstance.put("/exhibitor/update-profile", form, {withCredentials: true});
       setMessage(res.data.message);
     } catch (err) {
       setMessage(err.response?.data?.message || "Update failed");

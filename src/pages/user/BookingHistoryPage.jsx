@@ -14,9 +14,6 @@ function BookingHistoryPage() {
         setLoading(true);
         const response = await axiosInstance.get('/booking/all-bookings', {
           withCredentials: true, 
-          headers: {
-            // Authorization: `Bearer ${yourToken}`, // if using Bearer token
-          },
         });
         
         console.log("Bookings response : ",response.data.data);

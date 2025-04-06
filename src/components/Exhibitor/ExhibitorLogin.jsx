@@ -49,7 +49,7 @@ export default function ExhibitorLogin() {
             const response = await axiosInstance.post('/exhibitor/login', {
                 email,
                 password,
-            });
+            }, {withCredentials: true});
 
             console.log('Exhibitor login success:', response.data);
             dispatch(saveUser(response?.data?.data));

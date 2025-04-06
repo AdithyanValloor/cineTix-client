@@ -94,7 +94,7 @@ function AuthForm() {
                     lastName, 
                     email, 
                     password 
-                });
+                }, {withCredentials: true});
                 console.log("======", response.data)
 
                 dispatch(clearUser());
@@ -105,7 +105,7 @@ function AuthForm() {
                 response = await axiosInstance.post("/user/login", { 
                     email, 
                     password 
-                });
+                }, {withCredentials: true});
                 console.log("======", response) 
                 
                 dispatch(saveUser(response?.data?.data));

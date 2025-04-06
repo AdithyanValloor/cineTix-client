@@ -188,6 +188,7 @@ function ProfilePage() {
 
       const response = await axiosInstance.put("/user/profile-update", formDataToSend, {
         headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
       });
 
       if (response.data && response.data.data) {
