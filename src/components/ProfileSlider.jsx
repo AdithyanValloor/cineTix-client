@@ -1,23 +1,20 @@
-import { BellIcon, ChevronRight, Gift, Handshake, ListVideo, LogOut, MessageSquareMore, Settings, Star, TicketCheck, UserCircle, Wallet, X } from "lucide-react";
+import { BellIcon, ChevronRight, Gift, Handshake, ListVideo, LogOut, MessageSquareCode, MessageSquareMore, Settings, Star, TicketCheck, UserCircle, Wallet, X } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { axiosInstance } from "../config/axiosInstance";
 import { clearUser } from '../redux/features/userSlice'
 import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
-
-const ProfileButton = ({ user, onClick }) => {
+const ProfileButton = ({ profilePicture , firstName, lastName, onClick }) => {
   return (
     <button onClick={onClick} className="flex items-center gap-3 lg:pl-5 lg:pr-10 cursor-pointer  py-2">
-        {/* <UserCircle
-            strokeWidth={1}
-        /> */}
         
         <div className="bg-red-200 w-12 lg:w-10 rounded-full contain-content">
-                <img src="https://as2.ftcdn.net/jpg/05/89/93/27/1000_F_589932782_vQAEAZhHnq1QCGu5ikwrYaQD0Mmurm0N.jpg" alt="" />
+                <img src={ profilePicture ? profilePicture : "https://as2.ftcdn.net/jpg/05/89/93/27/1000_F_589932782_vQAEAZhHnq1QCGu5ikwrYaQD0Mmurm0N.jpg"} alt="" />
         </div>
         <span className="hidden lg:block">
-          Hey, {user ? user : "User"}
+          Hey, {firstName ? firstName : "User"}
         </span>
     </button>
   );
@@ -25,7 +22,7 @@ const ProfileButton = ({ user, onClick }) => {
 
 const MenuItem = ({onClick, to, icon: Icon, title, description }) => (
     <li className="border-t border-gray-200 text-sm hover:bg-base-100 transition-all duration-300">
-      <NavLink className="flex items-center gap-4 w-full h-14 px-4" onClick={onClick} to={to}>
+      <NavLink className="flex relative items-center gap-4 w-full h-14 px-4" onClick={onClick} to={to}>
         <Icon strokeWidth={1} />
         <span>
           {title}
@@ -37,7 +34,7 @@ const MenuItem = ({onClick, to, icon: Icon, title, description }) => (
 );
   
 
-const ProfileSlide = ({ user, showSearch, onClose }) => {
+const ProfileSlide = ({ profilePicture, firstName, lastName, showSearch, onClose }) => {
 
   const dispatch = useDispatch()
 
@@ -84,12 +81,12 @@ const ProfileSlide = ({ user, showSearch, onClose }) => {
         <div className="flex items-center gap-3 w-full p-3 text-lg border-b border-gray-400">
 
             <div className="bg-red-200 w-12 h-12 rounded-full contain-content">
-                <img src="https://as2.ftcdn.net/jpg/05/89/93/27/1000_F_589932782_vQAEAZhHnq1QCGu5ikwrYaQD0Mmurm0N.jpg" alt="" />
+                <img src={ profilePicture ? profilePicture : "https://as2.ftcdn.net/jpg/05/89/93/27/1000_F_589932782_vQAEAZhHnq1QCGu5ikwrYaQD0Mmurm0N.jpg"} alt="" />
             </div>
     
             {/* <User2/> */}
             <div>
-                <p>HEY, {user ? user : "USER"}</p>
+                <p>HEY, {firstName ? `${firstName.toUpperCase()} ${lastName.toUpperCase()}` : "USER"}</p>
                 {/* <p className="text-[12px] flex items-center hover:underline underline-offset-4 cursor-pointer transition-all duration-200">Edit profile <ChevronRight size={15}/></p> */}
             </div>
 
@@ -103,20 +100,21 @@ const ProfileSlide = ({ user, showSearch, onClose }) => {
         </div>
 
         {/* Drop Down */}
-        <div className="w-full flex flex-col gap-5 ">
-            <ul className="flex flex-col text-lg font-semibold h-full">
+        <div className="w-full flex-1 overflow-y-auto max-h-[calc(100vh-80px)] custom-scroll">
+             <ul className="flex flex-col text-lg font-semibold">
 
-                <MenuItem onClick={onClose} to="/user/profile" icon={UserCircle} title="Edit Profile" />
-                <MenuItem onClick={onClose} to="/user/notifications" icon={BellIcon} title="Notifications" description="Manage your alerts" />
-                <MenuItem onClick={onClose} to="/user/booking-history" icon={TicketCheck} title="Booking History" description="View all your bookings" />
-                <MenuItem onClick={onClose} to="/user/watch-list" icon={ListVideo} title="Watchlist" description="Your saved movies" />
-                <MenuItem onClick={onClose} to="/user/favourite" icon={Star} title="Favourite" description="Your favourite locations and theaters" />
-                <MenuItem onClick={onClose} to="/user/wallet" icon={Wallet} title="Wallet" description="View wallet balance & Saved payment methods" />
-                <MenuItem onClick={onClose} to="/user/rewards" icon={Gift} title="Rewards" description="View your rewards and promotions" />
-                <MenuItem onClick={onClose} to="/user/account-settings" icon={Settings} title="Account Settings" description="Manage account & permissions" />
-                <MenuItem onClick={onClose} to="/user/help" icon={MessageSquareMore} title="Help & Support" description="Contact support & View commonly asked queries" />
-                <MenuItem onClick={onClose} to="/user/join-cinetix" icon={Handshake} title="Join us" description="Join us to list your Shows and Theaters" />
-                <MenuItem onClick={handleLogout} icon={LogOut} title="Logout"/>
+              <MenuItem onClick={onClose} to="/user/profile" icon={UserCircle} title="Edit Profile" />
+              <MenuItem onClick={onClose} to="/user/notifications" icon={BellIcon} title="Notifications" description="Manage your alerts" />
+              <MenuItem onClick={onClose} to="/user/booking-history" icon={TicketCheck} title="Booking History" description="View all your bookings" />
+              <MenuItem onClick={onClose} to="/user/watch-list" icon={ListVideo} title="Watchlist" description="Your saved movies" />
+              <MenuItem onClick={onClose} to="/user/favourite" icon={Star} title="Favourite" description="Your favourite locations and theaters" />
+              <MenuItem onClick={onClose} to="/user/user-reviews" icon={MessageSquareCode} title="Manage Reviews" description="View and manage your reviews" />
+              <MenuItem onClick={onClose} to="/user/wallet" icon={Wallet} title="Wallet" description="View wallet balance & Saved payment methods" />
+              <MenuItem onClick={onClose} to="/user/rewards" icon={Gift} title="Rewards" description="View your rewards and promotions" />
+              <MenuItem onClick={onClose} to="/user/account-settings" icon={Settings} title="Account Settings" description="Manage account & permissions" />
+              <MenuItem onClick={onClose} to="/user/help" icon={MessageSquareMore} title="Help & Support" description="Contact support & View commonly asked queries" />
+              <MenuItem onClick={onClose} to="/user/join-cinetix" icon={Handshake} title="Join us" description="Join us to list your Shows and Theaters" />
+              <MenuItem onClick={handleLogout} icon={LogOut} title="Logout"/>
 
             </ul>
         </div>
@@ -125,8 +123,14 @@ const ProfileSlide = ({ user, showSearch, onClose }) => {
   );
 };
 
-const ProfileComponent = ({username}) => {
+const ProfileComponent = () => {
 
+  const { userData, role } = useSelector((state) => state.user); 
+  
+  if (role == "exhibitor") return null
+
+
+  const { profilePicture , firstName, lastName } = userData || {};
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -146,11 +150,12 @@ const ProfileComponent = ({username}) => {
   } else {
     document.body.style.overflow = "";
   }
+  
 
   return (
     <>
-      <ProfileButton user={username} onClick={handleSlider} />
-      <ProfileSlide user={username} showSearch={showSlider} onClose={handleSlider} />
+      <ProfileButton profilePicture={profilePicture?.url} firstName={firstName} lastName={lastName} onClick={handleSlider} />
+      <ProfileSlide profilePicture={profilePicture?.url} firstName={firstName} lastName={lastName} showSearch={showSlider} onClose={handleSlider} />
     </>
   );
 };

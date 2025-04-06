@@ -2,14 +2,17 @@ import { Eye, EyeClosed, Lock, Mail, User } from 'lucide-react'
 import React, { useState }from 'react'
 import { ButtonGoogle, ButtonPrimary } from './Button/Button';
 import { useDispatch } from "react-redux";
-import { saveUser } from "../redux/features/userSlice";
+import { saveUser, clearUser } from "../redux/features/userSlice";
 import { axiosInstance } from '../config/axiosInstance';
+
 
 function AuthForm() {
     
     const [showPass, setShowPass] = useState(false)
-    const [user, setUser] = useState("")
+    // const [user, setUser] = useState("")
     const [email, setEmail] = useState("");
+    const [firstName, setFirstName] = useState("")
+    const [lastName, setLastName] = useState("")
     const [password, setPassword] = useState("");
     const [error, setError] = useState("")
     const [errors, setErrors] = useState({user: "", email: "", password: "" });
@@ -19,27 +22,39 @@ function AuthForm() {
     const toggleUserMode = () => {
 
         setNewUser(prev => !prev);
-        setUser(""); 
+        // setUser(""); 
+        setFirstName(""); 
+        setLastName("");
         setEmail("")
         setPassword("")
         setError("")
-        setErrors({ user: "", email: "", password: "" }); 
+        setErrors({firstName:"", lastName:"", email: "", password: "" }); 
     };
 
     const validate = () => {
         let valid = true;
-        let newErrors = {user:"", email: "", password: "" };
+        let newErrors = {firstName:"", lastName:"", email: "", password: "" };
 
         if (newUser) {
 
-            if (!user.trim()) {
-                newErrors.user = "Username is required"
+            if (!firstName.trim()) {
+                newErrors.firstName = "First name is required"
                 valid = false
-            }else if(user.length < 3){
-                newErrors.user = "Username must be at least 3 characters"
+            }else if(firstName.length < 3){
+                newErrors.firstName = "First name must be at least 3 characters"
                 valid = false
-            }else if(!/^[a-zA-Z][a-zA-Z0-9]{2,19}$/.test(user)){
-                newErrors.user = "Username cannot contain special characters"
+            }else if(!/^[a-zA-Z][a-zA-Z0-9]{2,19}$/.test(firstName)){
+                newErrors.firstName = "First name cannot contain special characters"
+            }
+
+            if (!lastName.trim()) {
+                newErrors.lastName = "Last name is required"
+                valid = false
+            }else if(lastName.length < 3){
+                newErrors.lastName = "Last name must be at least 3 characters"
+                valid = false
+            }else if(!/^[a-zA-Z][a-zA-Z0-9]{2,19}$/.test(lastName)){
+                newErrors.lastName = "Last name cannot contain special characters"
             }
         }
 
@@ -75,11 +90,14 @@ function AuthForm() {
             let response
             if (newUser) {
                 response = await axiosInstance.post("/user/signup", { 
-                    name: user, 
+                    firstName, 
+                    lastName, 
                     email, 
                     password 
                 });
                 console.log("======", response.data)
+
+                dispatch(clearUser());
 
                 dispatch(saveUser(response?.data?.data));
 
@@ -124,7 +142,7 @@ function AuthForm() {
                                 name="email"
                                 id="email"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={(e) => setEmail(e.target.value.toLowerCase())}
                                 placeholder="Email"
                                 className={`font-light w-full bg-transparent outline-none placeholder:text-base-content placeholder:text-sm p-2 border-b ${
                                     error || errors.email ? "border-red-500" : "border-gray-400"
@@ -201,17 +219,32 @@ function AuthForm() {
                         <div className="relative">
                             <input
                                 type="text"
-                                name="name"
-                                id="name"
-                                value={user}
-                                onChange={(e) => setUser(e.target.value.toLowerCase())}
-                                placeholder="Username"
+                                name="firstName"
+                                id="firstName"
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
+                                placeholder="First Name"
                                 className={`font-light w-full bg-transparent outline-none placeholder:text-base-content placeholder:text-sm p-2 border-b ${
-                                    errors.user ? "border-red-500" : "border-gray-400"
+                                    errors.firstName ? "border-red-500" : "border-gray-400"
                                 } px-10`}
                             />
                             <User strokeWidth={1} size={19} className="absolute top-1/2 -translate-y-1/2 left-2" />
-                            {errors.user && <p className="text-red-500 font-light absolute text-xs mt-1">{errors.user}</p>}
+                            {errors.firstName && <p className="text-red-500 font-light absolute text-xs mt-1">{errors.firstName}</p>}
+                        </div>
+                        <div className="relative">
+                            <input
+                                type="text"
+                                name="lastName"
+                                id="lastName"
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                                placeholder="Last Name"
+                                className={`font-light w-full bg-transparent outline-none placeholder:text-base-content placeholder:text-sm p-2 border-b ${
+                                    errors.lastName? "border-red-500" : "border-gray-400"
+                                } px-10`}
+                            />
+                            <User strokeWidth={1} size={19} className="absolute top-1/2 -translate-y-1/2 left-2" />
+                            {errors.lastName && <p className="text-red-500 font-light absolute text-xs mt-1">{errors.lastName}</p>}
                         </div>
 
                         {/* Email Field */}
@@ -221,7 +254,7 @@ function AuthForm() {
                                 name="email"
                                 id="email"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)} 
+                                onChange={(e) => setEmail(e.target.value.toLowerCase())} 
                                 placeholder="Email"
                                 className={`font-light w-full bg-transparent outline-none placeholder:text-base-content placeholder:text-sm p-2 border-b ${
                                     errors.email ? "border-red-500" : "border-gray-400"

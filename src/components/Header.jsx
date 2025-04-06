@@ -8,7 +8,7 @@ import LocationComponent from './Location'
 import Auth from './Auth'
 import { useSelector } from "react-redux";
 import WelcomePopup from './WelcomePopup'
-import { Link, NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 function Header() {
 
@@ -64,12 +64,9 @@ function Header() {
         </div>
       
         {/* Navigation */}
-        <div className="absolute lg:static md:border-0  top-full bg-base-100 md:bg-transparent md:top-auto w-full lg:w-auto flex items-center justify-center lg:bg-transparent lg:top-auto">
+        <div className="absolute shadow md:shadow-none lg:static md:border-0  top-full bg-base-100 md:bg-transparent md:top-auto w-full lg:w-auto flex items-center justify-center lg:bg-transparent lg:top-auto">
           <Nav />
         </div>
-
-       
-
       
         {/* Right Section - Buttons & Profile | DEVICE > MD |*/}
         <div className="lg:flex hidden">
@@ -77,7 +74,9 @@ function Header() {
           <SearchComponent />
           <div className="flex items-center">
             <LocationComponent />
-            {isUserAuth ? <ProfileComponent username={userData.name} /> :  <Auth/> }
+            
+
+            {isUserAuth ? <ProfileComponent /> :  <Auth/> }
           </div>
         </div>
 

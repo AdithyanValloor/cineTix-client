@@ -1,55 +1,179 @@
-import React, { useState, useEffect } from "react";
-import { ButtonPrimary } from "../../components/Button/Button";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { ButtonPrimary, ButtonPrimaryOutline } from "../../components/Button/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { axiosInstance } from "../../config/axiosInstance";
 import { saveUser } from "../../redux/features/userSlice";
+import { MdAddAPhoto } from "react-icons/md";
+import Cropper from "react-easy-crop";
+import {getCroppedImg} from "../../utils/CropUtil";
+import ProfileForm from "../../components/ProfileForm";
 
 function ProfilePage() {
+  const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.user);
 
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    name: "",
+    firstName: "",
+    lastName: "",
+    dateOfBirth: "",
+    email: "",
+    mobile: "",
+    identity: "",
+    married: "",
+    pincode: "",
+    address1: "",
+    address2: "",
+    landmark: "",
+    city: "",
+    state: "",
+  });
+
+
+  const buttonRef = useRef(null);
+  
+  const [isButtonOutOfView, setIsButtonOutOfView] = useState(false);
   const [profilePic, setProfilePic] = useState(null);
-  const [preview, setPreview] = useState(userData?.profilePic || "https://via.placeholder.com/150");
+  const [preview, setPreview] = useState("https://as2.ftcdn.net/jpg/05/89/93/27/1000_F_589932782_vQAEAZhHnq1QCGu5ikwrYaQD0Mmurm0N.jpg");
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [showCropModal, setShowCropModal] = useState(false);
   const [changesMade, setChangesMade] = useState(false);
-  const [isEditingEmail, setIsEditingEmail] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setFormData({
-      name: userData?.name || "",
-      firstName: "",
-      lastName: "",
-      dateOfBirth: "",
-      email: userData?.email || "",
-      mobile: "",
-      identity: null,
-      married: null,
-      pincode: "",
-      address1: "",
-      address2: "",
-      landmark: "",
-      city: "",
-      state: "",
-    });
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsButtonOutOfView(!entry.isIntersecting);
+      },
+      {
+        root: null,
+        threshold: 1.0,
+      }
+    );
+  
+    if (buttonRef.current) {
+      observer.observe(buttonRef.current);
+    }
+  
+    return () => {
+      if (buttonRef.current) {
+        observer.unobserve(buttonRef.current);
+      }
+    };
+  }, []);
+  
+  useEffect(() => {
+    if (userData) {
+      setFormData((prev) => ({
+        ...prev,
+        firstName: userData.firstName || "",
+        lastName: userData.lastName || "",
+        dateOfBirth: userData.dateOfBirth ? userData.dateOfBirth.split("T")[0] : "",
+        email: userData.email || "",
+        mobile: userData.mobile || "",
+        identity: userData.identity || "",
+        married: userData.married || "",
+        pincode: userData.pincode || "",
+        address1: userData.address1 || "",
+        address2: userData.address2 || "",
+        landmark: userData.landmark || "",
+        city: userData.city || "",
+        state: userData.state || "",
+      }));
+  
+      const url = userData?.profilePicture?.url;
+      if (url) setPreview(url);
+    }
   }, [userData]);
+  
+  
 
   useEffect(() => {
-    setChangesMade(JSON.stringify(formData) !== JSON.stringify(userData));
-  }, [formData, userData]);
+    if (!userData) return;
+  
+    const relevantKeys = [
+      "firstName", "lastName", "dateOfBirth", "email", "mobile", "identity", "married",
+      "pincode", "address1", "address2", "landmark", "city", "state"
+    ];
+  
+    const formatDate = (dateStr) => {
+      if (!dateStr) return "";
+      return new Date(dateStr).toISOString().split("T")[0];
+    };
+  
+    let formChanged = false;
+  
+    for (let key of relevantKeys) {
+      const userVal = userData[key] ?? "";
+      const formVal = formData[key] ?? "";
+  
+      const normalizedUserVal = key === "dateOfBirth" ? formatDate(userVal) : String(userVal);
+      const normalizedFormVal = key === "dateOfBirth" ? formatDate(formVal) : String(formVal);
+  
+      if (normalizedUserVal !== normalizedFormVal) {
+        formChanged = true;
+        break;
+      }
+    }
+  
+    const picChanged = preview !== (userData?.profilePicture?.url || "");
+  
+    setChangesMade(formChanged || picChanged);
+  }, [formData, preview, userData]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value, name: `${formData.firstName} ${formData.lastName}`.trim() });
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handleIdentitySelect = (value) => {
+    setFormData((prevData) => ({ ...prevData, identity: value }));
   };
 
   const handleProfilePicChange = (e) => {
     const file = e.target.files[0];
+    console.log(file);
+    
     if (file) {
       setProfilePic(file);
       setPreview(URL.createObjectURL(file));
     }
+
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setCroppedAreaPixels(null);
+    setShowCropModal(true);
+
   };
 
-  const dispatch = useDispatch();
+  const onCropComplete = useCallback((_, croppedPixels) => {
+    setCroppedAreaPixels(croppedPixels);
+  }, []);
+
+  const handleCropSave = async () => {
+    try {
+      const croppedBlob = await getCroppedImg(preview, croppedAreaPixels);
+      const croppedFile = new File([croppedBlob], "profile.jpg", { type: "image/jpeg" });
+  
+      console.log("Cropped File:", croppedFile);
+      console.log("Cropped Blob:", croppedBlob);
+  
+      setProfilePic(croppedFile);
+      setPreview(URL.createObjectURL(croppedBlob)); 
+      setShowCropModal(false);
+    } catch (error) {
+      console.error("Error in Cropping Function:", error);
+      alert("Something went wrong while cropping the image.");
+    }
+  };
+  
+
+
+  console.log("PREVIEW : ", preview);
+  
+  
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -59,7 +183,7 @@ function ProfilePage() {
         formDataToSend.append(key, formData[key]);
       });
       if (profilePic) {
-        formDataToSend.append("profilePic", profilePic);
+        formDataToSend.append("profilePicture", profilePic);
       }
 
       const response = await axiosInstance.put("/user/profile-update", formDataToSend, {
@@ -67,59 +191,75 @@ function ProfilePage() {
       });
 
       if (response.data && response.data.data) {
-        dispatch(saveUser(response?.data?.data));
+        dispatch(saveUser(response.data.data));
         setFormData(response.data.data);
         alert("Profile updated successfully!");
       } else {
         alert("Something went wrong.");
       }
       setChangesMade(false);
-    } catch (error) {
-      alert("Error updating profile.");
-    }
+
+      } catch (error) {
+        console.error("Update Error:", error);
+        alert(error?.response?.data?.message || error.message || "Error updating profile.");
+      }
+  
     setLoading(false);
   };
 
   return (
-    <div className="pt-20 flex bg-base-200 items-center justify-center min-h-screen">
-      <div className="max-w-2xl my-10 w-full mx-auto bg-base-100 shadow-xl rounded-lg relative">
-        <div className="rounded-t-lg w-full p-5 bg-gradient-to-t from-base-300 to-red-600 flex items-center font-bold gap-5">
-          <label className="w-20 h-20 bg-base rounded-full overflow-hidden cursor-pointer relative">
-            <img src={'https://www.shutterstock.com/image-vector/profile-default-avatar-icon-user-600nw-2463844171.jpg'} alt="Profile" className="w-full h-full object-cover bg-green-400" />
-            <input type="file" accept="image/*" onChange={handleProfilePicChange} className="absolute inset-0 opacity-0 cursor-pointer" />
-          </label>
-          <h1 className="text-3xl text-white">Hey, {userData?.name}</h1>
+    <div className="pt-36 md:pt-24 pb-10 bg-base-200">
+      {showCropModal && (
+        <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-[5px] flex items-center justify-center">
+          <div className="w-96 max-w-lg bg-white p-2 rounded-lg shadow-lg">
+            <h1 className="text-center py-1 text-lg">Crop Profile Picture</h1>
+            {/* Cropper container with fixed aspect ratio */}
+            <div className="relative w-full h-[300px] bg-gray-100">
+              <Cropper
+                image={preview}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+              />
+            </div>
+
+            <div className="flex  gap-3 mt-4">
+              <ButtonPrimaryOutline onClick={() => setShowCropModal(false)} text={"Cancel"}/>
+              <ButtonPrimary onClick={handleCropSave} text={"Save"}/>
+            </div>
+          </div>
         </div>
+      )}
 
-        <div className="p-6">
-          <h2 className="text-2xl font-bold mb-4">Account Details</h2>
 
-          <div className="mb-6">
-            <label className="block font-semibold">Email Address</label>
-            <input
-              type="email"
-              name="email"
-              className="w-full p-2 border rounded-md"
-              disabled={!isEditingEmail}
-              value={formData.email}
-              onChange={handleChange}
-            />
-            <button className="text-blue-500 mt-2" onClick={() => setIsEditingEmail(!isEditingEmail)}>
-              {isEditingEmail ? "Save" : "Edit"}
-            </button>
+      <div className="flex justify-center">
+        <div className="max-w-2xl w-full bg-base-300 rounded-lg shadow-xl">
+          <div className="bg-red-400 p-2 md:rounded-t-lg flex items-center gap-5 text-white">
+            <label className="w-20 h-20 bg-base rounded-full overflow-hidden cursor-pointer relative group">
+              <div className="absolute bottom-0 w-full h-[25%] bg-base-content/45 opacity-0 group-hover:opacity-100 flex justify-center items-center transition-all">
+                <MdAddAPhoto className="text-base-300" />
+              </div>
+              <img src={preview} alt="Profile" className="w-full h-full object-cover" />
+              <input type="file" accept="image/*" onChange={handleProfilePicChange} className="absolute inset-0 opacity-0 cursor-pointer" />
+            </label>
+            <h1 className="text-2xl lg:text-3xl">Hey, {userData?.firstName} {userData?.lastName}</h1>
           </div>
 
-          <h3 className="text-xl font-semibold mb-2">Personal Details</h3>
-          <input type="text" name="firstName" placeholder="First Name" className="w-full p-2 border rounded-md mb-3" onChange={handleChange} />
-          <input type="text" name="lastName" placeholder="Last Name" className="w-full p-2 border rounded-md mb-3" onChange={handleChange} />
-          <input type="date" name="dateOfBirth" className="w-full p-2 border rounded-md mb-3" onChange={handleChange} />
+          <ProfileForm
+            formData={formData}
+            handleChange={handleChange}
+            handleIdentitySelect={handleIdentitySelect}
+            handleSubmit={handleSubmit}
+            changesMade={changesMade}
+            loading={loading}
+            buttonRef={buttonRef}
+            isFixed={isButtonOutOfView}
+          />
+          
         </div>
-
-        {changesMade && (
-          <div className="fixed bottom-0 left-0 w-full bg-base-300 shadow-t shadow-lg p-4 flex justify-center">
-            <ButtonPrimary onClick={handleSubmit} text={loading ? "Saving..." : "Save Changes"} />
-          </div>
-        )}
       </div>
     </div>
   );

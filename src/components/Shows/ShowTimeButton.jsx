@@ -1,22 +1,21 @@
-import React, {useState} from 'react'
+import React from 'react';
 
-const ShowTimeButton = () => {
-    
-    const [selectedShowtime, setSelectedShowtime] = useState("10:00 AM");
-    
+const formatTime12hr = (time24) => {
+  if (!time24 || typeof time24 !== "string" || !time24.includes(":")) return "Invalid time";
+
+  const [hourStr, minute] = time24.split(':');
+  let hour = parseInt(hourStr, 10);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12 || 12;
+  return `${hour}:${minute} ${ampm}`;
+};
+
+const ShowTimeButton = ({ show }) => {
   return (
-    <div className="flex gap-2">
-        {["10:00 AM", "1:00 PM", "4:00 PM", "7:00 PM"].map((time) => (
-            <button
-            key={time}
-            className={`btn ${selectedShowtime === time ? "btn bg-red-500 text-white" : "btn bg-white text-black"}`}
-            onClick={() => setSelectedShowtime(time)}
-            >
-            {time}
-        </button>
-        ))}
-    </div>
-  )
-}
+    <button className="btn bg-white text-black hover:bg-red-500 hover:text-white">
+      {formatTime12hr(show.time)}
+    </button>
+  );
+};
 
-export default ShowTimeButton
+export default ShowTimeButton;

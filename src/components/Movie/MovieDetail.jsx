@@ -23,21 +23,17 @@ const MovieBanner = ({ movie }) => {
         <div className="flex flex-col gap-1 justify-end md:gap-4 text-white z-10">
           <h1 className="text-2xl sm:text-xl md:text-4xl font-bold">{movie.title}</h1>
 
-          <div className="w-fit self-start inline-flex rounded-lg flex-wrap gap-2 text-xs sm:text-sm md:text-base bg-neutral-900 p-2 cursor-pointer">
-            <p className="text-white rounded-md inline-flex items-center gap-1 md:gap-2">
-              <Star className="size-3 md:size-5" fill="white" /> {movie.rating} ({movie.votes} votes){" "}
-              <ChevronRight className="size-3" />
-            </p>
-            <button className="bg-red-200 px-2 text-black sm:px-2 py-1 rounded-md inline-flex cursor-pointer hover:scale-105 transition-all duration-200">
-              Rate Now
-            </button>
-          </div>
-
-          {/* <div className="flex flex-wrap gap-1 md:gap-2 text-xs sm:text-sm md:text-base">
-            {movie.formats.map((format, index) => (
-              <p key={index} className="bg-gray-200 text-black px-2 sm:px-3 py-1 rounded-md inline-flex">{format}</p>
-            ))}
-          </div> */}
+          <Link to={"/user/reviews"}>
+            <div className="w-fit self-start inline-flex rounded-lg flex-wrap gap-2 text-xs sm:text-sm md:text-base bg-neutral-900 p-2 cursor-pointer">
+              <p className="text-white rounded-md inline-flex items-center gap-1 md:gap-2">
+                <Star className="size-3 md:size-5" fill="white" /> {movie.rating} ({movie.votes} votes){" "}
+                <ChevronRight className="size-3" />
+              </p>
+              <button className="bg-red-200 px-2 text-black sm:px-2 py-1 rounded-md inline-flex cursor-pointer hover:scale-105 transition-all duration-200">
+                Rate Now
+              </button>
+            </div>
+          </Link>
 
           <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm md:text-base text-white">
             <p className="px-2 sm:px-3 py-1 rounded-md inline-flex">{Math.floor(movie.duration / 60)}h {movie.duration % 60 !== 0 && ` ${movie.duration % 60}m`}</p>
@@ -47,11 +43,13 @@ const MovieBanner = ({ movie }) => {
             <p className="px-2 sm:px-3 py-1 rounded-md inline-flex">{movie.certification}</p>
           </div>
           
-          <Link to={"/seat-selection"}>
-            <button className="bg-red-600 text-white py-2 px-4 sm:px-6 rounded-lg hover:bg-red-500 transition-all duration-300 mt-2 sm:mt-3 inline-flex self-start hover:scale-105 cursor-pointer">
-              Book Tickets
-            </button>
-          </Link>
+          <div className="inline-block">
+            <Link  className="bg-red-600 text-white py-2 px-4 sm:px-6 rounded-lg hover:bg-red-500 transition-all duration-300 mt-2 sm:mt-3 inline-flex self-start hover:scale-105 cursor-pointer" to={`/shows/${movie._id}`}>
+              <button>
+                Book Tickets
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>
@@ -103,6 +101,14 @@ function MovieDetails() {
 
   if (!movie) return <div className="text-center py-10">Loading...</div>;
 
+  console.log("MOVIE : ", movie.castAndCrew);
+
+  movie.castAndCrew.map((item) => {
+    console.log(item);
+    
+  })
+  
+
   return (
     <div className="pt-[140px] md:pt-20">
       <MovieBanner movie={movie} />
@@ -110,7 +116,17 @@ function MovieDetails() {
 
       <div className="px-5 bg-base-200 md:px-50 py-6">
         <h2 className="font-bold text-lg sm:text-2xl md:text-3xl py-2">Cast & Crew</h2>
-        <CastCarousel cast={cast} />
+        {/* <CastCarousel cast={cast} /> */}
+        { movie.castAndCrew.map((item) => {
+          console.log(item);
+          return(
+            <div className="flex gap-2 my-2">
+              <p className="font-semibold">{item.name} :</p>
+              <p className="font-extralight">{item.character && item.character !== 'N/A' ? item.character : item.role}</p>
+            </div>
+          )
+        })}
+
       </div>
 
       <div className="px-5 bg-base-200 md:px-50 py-6">

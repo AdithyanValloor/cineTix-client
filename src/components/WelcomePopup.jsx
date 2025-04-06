@@ -16,10 +16,10 @@ export default function WelcomePopup() {
 
   return (
     // isOpen && (
-      <div className={`fixed top-20 transform left-1/2 -translate-x-1/2 flex items-center transition-all duration-500 ${isOpen ? "translate-y-0 opacity-100" : "-translate-y-10 opacity-0 -z-50"}`}>
-        <div className="bg-gray-100 p-3 rounded-lg shadow-lg text-center animate-fade-in">
-          <h2 className="text-xl text-black font-bold">Welcome, {userData.name}!</h2>
-          <p className="text-black">We're glad to have you here.</p>
+      <div className={`fixed top-20 transform left-1/2 -translate-x-1/2 flex items-center transition-all duration-500 ${isOpen ? "translate-y-0 opacity-100 z-50" : "-translate-y-10 opacity-0 -z-5 pointer-events-none"}`}>
+        <div className="bg-gray-200 p-1.5 md:p-3 rounded-lg shadow-lg text-center animate-fade-in">
+          <h2 className="md:text-xl text-black font-bold">Welcome, {userData.firstName} {userData.lastName}!</h2>
+          <p className="text-sm lg:text-md text-black">We're glad to have you here.</p>
         </div>
       </div>
     // )

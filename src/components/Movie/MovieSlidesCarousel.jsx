@@ -29,35 +29,43 @@ const MoviesCard = ({ id, title, rating, posterUrl }) => {
 
 export default function MoviesCarousel() {
   const swiperRef = useRef(null);
-  const [movies, setMovies] = useState([]); // Store movies from backend
+  const [movies, setMovies] = useState([]);
   const [showPrev, setShowPrev] = useState(false);
   const [showNext, setShowNext] = useState(true);
   const [slidesPerView, setSlidesPerView] = useState(3);
-  const [isDesktop, setIsDesktop] = useState(true);
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
 
   useEffect(() => {
     const fetchMovies = async () => {
       try {
-        const response = await axiosInstance.get("/movies");
-        console.log("Movies Data:", response.data.data); 
-  
-       
+        // const response = await axiosInstance.get("/movies");
+        const response = await axiosInstance.get("/shows/active-movies");
+
+        console.log("Curently Running movie : ",response);
+        
+
         if (Array.isArray(response.data.data)) {
-          setMovies(response.data.data); 
+          setMovies(response.data.data);
         } else {
-          console.error("Expected an array but got:", typeof response.data.data);
-          setMovies([]); 
+          setMovies([]);
         }
       } catch (error) {
         console.error("Error fetching movies:", error);
       }
     };
-  
+
     fetchMovies();
   }, []);
-  
 
-  // Update navigation button visibility
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const updateButtons = () => {
     if (swiperRef.current) {
       setShowPrev(!swiperRef.current.isBeginning);
@@ -65,25 +73,13 @@ export default function MoviesCarousel() {
     }
   };
 
-  // Detect screen size changes
-  useEffect(() => {
-    const handleResize = () => {
-      setIsDesktop(window.innerWidth >= 1024);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   useEffect(() => {
     if (swiperRef.current) {
       swiperRef.current.on("slideChange", updateButtons);
       updateButtons();
       setSlidesPerView(swiperRef.current.params.slidesPerView);
     }
-  }, []);
+  }, [movies]);
 
   const handleNext = () => {
     if (swiperRef.current) {
@@ -102,7 +98,10 @@ export default function MoviesCarousel() {
   return (
     <div className="relative w-full">
       <Swiper
-        onSwiper={(swiper) => (swiperRef.current = swiper)}
+        onSwiper={(swiper) => {
+          swiperRef.current = swiper;
+          updateButtons();
+        }}
         breakpoints={{
           640: { slidesPerView: 2, spaceBetween: 10 },
           768: { slidesPerView: 3, spaceBetween: 15 },
@@ -130,7 +129,7 @@ export default function MoviesCarousel() {
           {showNext && (
             <button
               onClick={handleNext}
-              className="absolute top-[50%] -right-5 -translate-y-1/2 bg-base-100 text-base-content p-3 rounded-full shadow-lg z-10 cursor-pointer hover:scale-105 transition-all duration-200"
+              className="absolute top-1/2 -right-5 -translate-y-1/2 bg-base-100 text-base-content p-3 rounded-full shadow-lg z-10 cursor-pointer hover:scale-105 transition-all duration-200"
             >
               <ChevronRight size={20} />
             </button>
@@ -139,7 +138,7 @@ export default function MoviesCarousel() {
           {showPrev && (
             <button
               onClick={handlePrev}
-              className="absolute top-[50%] -left-5 -translate-y-1/2 bg-base-100 text-base-content p-3 rounded-full shadow-lg z-10 cursor-pointer hover:scale-105 transition-all duration-200"
+              className="absolute top-1/2 -left-5 -translate-y-1/2 bg-base-100 text-base-content p-3 rounded-full shadow-lg z-10 cursor-pointer hover:scale-105 transition-all duration-200"
             >
               <ChevronLeft size={20} />
             </button>

@@ -1,13 +1,30 @@
 import { ChevronLeft, Heart, Info, X } from "lucide-react";
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
+import { useNavigate } from "react-router-dom";
 
-export const ButtonPrimary = ({ type, text, onClick = () => {} }) => {
+
+
+
+
+export const ButtonPrimary = ({ type, text, className, onClick = () => {} }) => {
   return (
     <button
       type={type ? type : 'button'}
       onClick={onClick}
-      className="text-white px-4 py-2 rounded-md cursor-pointer bg-[#e30613] hover:bg-red-500 transition-all duration-300"
+      className={`text-white px-4 py-2 rounded-md cursor-pointer bg-[#e30613] hover:bg-red-500  transition-all duration-300 ${className}`}
+    >
+      {text}
+    </button>
+  );
+};
+
+export const ButtonPrimaryOutline = ({ type, text, className, onClick = () => {} }) => {
+  return (
+    <button
+      type={type ? type : 'button'}
+      onClick={onClick}
+      className={`hover:text-white text-[#e30613] px-4 py-2 rounded-md cursor-pointer border border-[#e30613]  hover:bg-red-500 transition-all duration-300 ${className}`}
     >
       {text}
     </button>
@@ -22,12 +39,23 @@ export const CloseButton = ({onClick = () => {}}) => {
     )
 }
 
-export const BackButton = ({onClick = () => {}}) => {
-    return(
-        <button onClick={onClick} className=' right-5 p-2 rounded-full cursor-pointer transition-all duration-500 hover:scale-120'>
-            <ChevronLeft className='stroke-2 lg:stroke-1 size-7'/>
-        </button>
-    )
+export const BackButton = () => {
+
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate("/");
+    }
+  };
+
+  return(
+      <button onClick={handleBack} className=' right-5 p-2 rounded-full cursor-pointer transition-all duration-500 hover:scale-120'>
+          <ChevronLeft className='stroke-2 lg:stroke-1 size-7'/>
+      </button>
+  )
 }
 
 export const ButtonGoogle = ({ type, text, onClick = () => {} }) => {

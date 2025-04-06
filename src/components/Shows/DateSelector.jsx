@@ -1,9 +1,7 @@
-import React, { useState } from "react";
-import dayjs from "dayjs"; // Install using `npm i dayjs`
+import React from "react";
+import dayjs from "dayjs"; // Already installed
 
-const DateSelector = () => {
-  const [selectedDate, setSelectedDate] = useState(dayjs().format("YYYY-MM-DD"));
-
+const DateSelector = ({ selectedDate, setSelectedDate }) => {
   // Generate the next 7 days dynamically
   const getNext7Days = () => {
     return Array.from({ length: 7 }, (_, index) =>
