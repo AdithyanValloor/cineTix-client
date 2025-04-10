@@ -33,6 +33,7 @@ import ExhibitorSettings from "../pages/exhibitor/SettingsPage";
 import CustomerFeedback from "../pages/exhibitor/CustomerFeedbackPage";
 import ExhibitorLoginPage from "../pages/exhibitor/ExhibitorLoginPage";
 import ManageMoviesInDB from "../pages/exhibitor/ManageMoviesInDB";
+import PaymentCanceled from "../pages/user/PaymentCancel";
 
 
 export const router = createBrowserRouter([
@@ -47,6 +48,7 @@ export const router = createBrowserRouter([
         { path: "movies", element: <AllMoviesPage /> },
         { path: "theaters", element: <TheatersPage /> },
         { path: "payment-success", element: <PaymentSuccess /> },
+        { path: "payment-canceled", element: <PaymentCanceled /> },
   
         {
           path: "user",
