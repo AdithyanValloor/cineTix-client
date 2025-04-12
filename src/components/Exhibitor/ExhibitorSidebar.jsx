@@ -4,8 +4,8 @@ const ExhibitorSidebar = () => {
   const links = [
     { path: "/exhibitor/dashboard", label: "Dashboard" },
     { path: "/exhibitor/theaters", label: "Manage Theaters" },
-    { path: "/exhibitor/schedule", label: "Movie Scheduling" },
-    { path: "/exhibitor/manage-movies", label: "Manage Movies" },
+    { path: "/exhibitor/schedule", label: "Show Scheduling" },
+    { path: "/exhibitor/shows-history", label: "Shows History" },
     { path: "/exhibitor/bookings", label: "Booking Management" },
     { path: "/exhibitor/reports", label: "Revenue Reports" },
     { path: "/exhibitor/analytics", label: "Theater Analytics" },

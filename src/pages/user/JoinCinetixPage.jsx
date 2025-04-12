@@ -12,7 +12,7 @@ function JoinCinetixPage() {
     lastName: '',
     email: '',
     password: '',
-    phone: '',
+    mobile: '',
     company: '',
   });
 
@@ -39,7 +39,7 @@ function JoinCinetixPage() {
       <h1 className="text-2xl font-bold mb-4">Join Cinetix as an Exhibitor</h1>
       
       <form onSubmit={handleSubmit} className="space-y-4">
-        {["firstName", "lastName", "email", "password", "phone", "company"].map((field) => (
+        {["firstName", "lastName", "email", "password", "mobile", "company"].map((field) => (
           <div key={field} className="flex items-center gap-4">
             <label htmlFor={field} className="w-32 text-right font-medium capitalize">
               {field === "phone" ? "Phone Number" : field}

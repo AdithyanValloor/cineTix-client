@@ -12,6 +12,7 @@ function SettingsPage() {
     newPassword: "",
   });
 
+  const [originalForm, setOriginalForm] = useState({});
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -19,19 +20,21 @@ function SettingsPage() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axiosInstance.get("/exhibitor/profile", {withCredentials: true});
+        const res = await axiosInstance.get("/exhibitor/profile", { withCredentials: true });
         const data = res.data.data;
 
-        console.log("RESPONSE : ", res.data.data.mobile);
-        
-        setForm((prev) => ({
-          ...prev,
+        const updatedForm = {
           firstName: data.firstName || "",
           lastName: data.lastName || "",
           email: data.email || "",
           mobile: data.mobile || "",
           company: data.company || "",
-        }));
+          oldPassword: "",
+          newPassword: "",
+        };
+
+        setForm(updatedForm);
+        setOriginalForm(updatedForm); // Save initial for comparison
       } catch (err) {
         setMessage(err.response?.data?.message || "Failed to load profile");
       }
@@ -44,13 +47,42 @@ function SettingsPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const hasFormChanged = () => {
+    // Check if profile fields changed
+    const changedProfileFields = Object.keys(originalForm).some((key) => {
+      if (key === "oldPassword" || key === "newPassword") return false;
+      return form[key] !== originalForm[key];
+    });
+
+    // Password change condition
+    const changingPassword = form.oldPassword && form.newPassword;
+
+    return changedProfileFields || changingPassword;
+  };
+
   const handleSubmit = async () => {
+    if (!hasFormChanged()) return;
+
     setLoading(true);
     setMessage("");
 
     try {
-      const res = await axiosInstance.put("/exhibitor/update-profile", form, {withCredentials: true});
+      const res = await axiosInstance.put("/exhibitor/update-profile", form, { withCredentials: true });
       setMessage(res.data.message);
+
+      // Update original form after save
+      setOriginalForm({
+        ...form,
+        oldPassword: "",
+        newPassword: "",
+      });
+
+      // Reset password fields after update
+      setForm((prev) => ({
+        ...prev,
+        oldPassword: "",
+        newPassword: "",
+      }));
     } catch (err) {
       setMessage(err.response?.data?.message || "Update failed");
     }
@@ -72,65 +104,23 @@ function SettingsPage() {
       <div className="bg-base-100 p-6 rounded-xl shadow space-y-4">
         <h2 className="text-lg font-semibold">Profile</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="form-control">
-            <label className="label" htmlFor="firstName">
-              <span className="label-text">First Name</span>
-            </label>
-            <input
-              id="firstName"
-              type="text"
-              name="firstName"
-              placeholder="First Name"
-              className="input input-bordered w-full"
-              value={form.firstName}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-control">
-            <label className="label" htmlFor="lastName">
-              <span className="label-text">Last Name</span>
-            </label>
-            <input
-              id="lastName"
-              type="text"
-              name="lastName"
-              placeholder="Last Name"
-              className="input input-bordered w-full"
-              value={form.lastName}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-control">
-            <label className="label" htmlFor="email">
-              <span className="label-text">Email Address</span>
-            </label>
-            <input
-              id="email"
-              type="email"
-              name="email"
-              placeholder="Email Address"
-              className="input input-bordered w-full"
-              value={form.email}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-control">
-            <label className="label" htmlFor="company">
-              <span className="label-text">Company Name</span>
-            </label>
-            <input
-              id="company"
-              type="text"
-              name="company"
-              placeholder="Company"
-              className="input input-bordered w-full"
-              value={form.company}
-              onChange={handleChange}
-            />
-          </div>
+          {/* Fields... */}
+          {["firstName", "lastName", "email", "company"].map((field) => (
+            <div className="form-control" key={field}>
+              <label className="label" htmlFor={field}>
+                <span className="label-text">{field.replace(/([A-Z])/g, " $1")}</span>
+              </label>
+              <input
+                id={field}
+                type="text"
+                name={field}
+                placeholder={field}
+                className="input input-bordered w-full"
+                value={form[field]}
+                onChange={handleChange}
+              />
+            </div>
+          ))}
         </div>
       </div>
 
@@ -185,12 +175,16 @@ function SettingsPage() {
             {message}
           </p>
         )}
-        <button
-          onClick={handleSubmit}
-          className={`btn btn-primary ${loading && "btn-disabled"}`}
-        >
-          {loading ? "Saving..." : "Save Changes"}
-        </button>
+        {hasFormChanged() && (
+        <div className="fixed bottom-0 right-0 px-5 py-2">
+          <button
+            onClick={handleSubmit}
+            className={`btn btn-primary ${loading && "btn-disabled"}`}
+          >
+            {loading ? "Saving..." : "Save Changes"}
+          </button>
+        </div>
+        )} 
       </div>
     </div>
   );

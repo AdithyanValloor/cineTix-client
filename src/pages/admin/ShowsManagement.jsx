@@ -1,6 +1,6 @@
 import React from 'react'
 
-function SiteSettingsPage() {
+function ShowsManagement() {
   return (
     <div>
       
@@ -8,4 +8,4 @@ function SiteSettingsPage() {
   )
 }
 
-export default SiteSettingsPage
+export default ShowsManagement

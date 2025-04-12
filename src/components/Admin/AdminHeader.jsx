@@ -4,19 +4,15 @@ import ThemeToggle from '../ThemeToggle';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import { useSelector, useDispatch } from "react-redux";
-import { clearUser } from '../../redux/features/userSlice';
-import { axiosInstance } from '../../config/axiosInstance'; 
+import { clearUser } from '../../redux/features/userSlice'; // if admin has its own slice, replace
+import { axiosInstance } from '../../config/axiosInstance';
 
-function ExhibitorHeader({ headline, toggleSidebar }) {
+function AdminHeader({ headline, toggleSidebar }) {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const navigate = useNavigate();
 
-  const { isUserAuth, userData } = useSelector((state) => state.user);
-  const dispatch = useDispatch()
-
-  console.log("IS AUTH:", isUserAuth);
-  console.log(userData);
-  
+  const { isUserAuth, userData } = useSelector((state) => state.user); // replace if needed
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -40,11 +36,9 @@ function ExhibitorHeader({ headline, toggleSidebar }) {
 
   const handleLogout = async () => {
     try {
-      await axiosInstance.post('/exhibitor/logout', {}, { withCredentials: true });
-      navigate('/exhibitor/login');
-
-      dispatch(clearUser())
-
+      await axiosInstance.post('/admin/logout', {}, { withCredentials: true });
+      navigate('/admin/login');
+      dispatch(clearUser()); 
     } catch (error) {
       console.error('Logout failed:', error);
     }
@@ -52,18 +46,18 @@ function ExhibitorHeader({ headline, toggleSidebar }) {
 
   return (
     <header className="bg-base-200 fixed w-full text-base-content h-24 lg:h-20 flex items-center justify-between z-50 shadow-md px-4">
-      
+
       {/* Hamburger (mobile) */}
       <button className="sm:hidden text-xl" onClick={toggleSidebar}>
         <Menu />
       </button>
 
-      {/* Headline (hidden in small screens) */}
+      {/* Headline (optional) */}
       {headline}
 
       {/* Logo */}
-      <div  className="absolute left-1/2 transform -translate-x-1/2">
-        <Link to={'/exhibitor/dashboard'} onClick={() => window.scrollTo({ top: 0, behavior: 'instant' })}>
+      <div className="absolute left-1/2 transform -translate-x-1/2">
+        <Link to={'/admin/dashboard'} onClick={() => window.scrollTo({ top: 0, behavior: 'instant' })}>
           {isDarkMode ? <LogoWhite size={120} /> : <LogoDark size={120} />}
         </Link>
       </div>
@@ -71,15 +65,17 @@ function ExhibitorHeader({ headline, toggleSidebar }) {
       {/* Theme Toggle + Logout */}
       <div className="absolute right-4 flex items-center gap-2">
         <ThemeToggle />
-        {isUserAuth && <button
-          onClick={handleLogout}
-          className="btn btn-sm btn-error text-white"
-        >
-          Logout
-        </button>}
+        {isUserAuth && (
+          <button
+            onClick={handleLogout}
+            className="btn btn-sm btn-error text-white"
+          >
+            Logout
+          </button>
+        )}
       </div>
     </header>
   );
 }
 
-export default ExhibitorHeader;
+export default AdminHeader;

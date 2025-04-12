@@ -273,7 +273,7 @@ function TheaterManagementPage() {
         ) : (
           <div className="overflow-x-auto space-y-4">
             {theaters.map((theater) => (
-              <div key={theater._id} className="border rounded-md p-4 space-y-2 bg-base-200">
+              <div key={theater._id} className="shadow rounded-md p-4 space-y-2 bg-base-200">
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="font-bold text-lg">{theater.name}</p>

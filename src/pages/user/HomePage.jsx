@@ -1,8 +1,17 @@
 import React from 'react'
 import ImageCarousel from '../../components/Movie/TopCarousel'
 import MoviesCarousel from '../../components/Movie/MovieSlidesCarousel'
+import { useSelector } from "react-redux";
+import { Navigate } from "react-router-dom";
 
 function HomePage() {
+
+  const { userData } = useSelector((state) => state.user);
+
+  if (!userData) return <Navigate to="/login" />;
+  
+  if (userData.role === "exhibitor") return <Navigate to="/exhibitor/dashboard" />;
+  if (userData.role === "admin") return <Navigate to="/admin/dashboard" />;
   
   return (
     <div className='w-full h-full pt-[150px] md:pt-20 bg-base-300'>

@@ -32,8 +32,23 @@ import TheaterAnalytics from "../pages/exhibitor/TheaterAnalyticsPage";
 import ExhibitorSettings from "../pages/exhibitor/SettingsPage";
 import CustomerFeedback from "../pages/exhibitor/CustomerFeedbackPage";
 import ExhibitorLoginPage from "../pages/exhibitor/ExhibitorLoginPage";
-import ManageMoviesInDB from "../pages/exhibitor/ManageMoviesInDB";
 import PaymentCanceled from "../pages/user/PaymentCancel";
+import ShowsHistory from "../pages/exhibitor/ShowsHistory";
+import AdminLoginPage from "../pages/admin/AdminLogin";
+import { AdminProtectedRoutes } from "./AdminProtectedRoutes";
+import AdminLayout from "../layout/AdminLayout";
+import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
+import ExhibitorManagementPage from "../pages/admin/ExhibitorManagementPage";
+import MovieManagementPage from "../pages/admin/MovieManagementPage";
+import ProfileSettings from "../pages/admin/ProfileSettings";
+import ReportsPage from "../pages/admin/ReportsPage";
+import UserManagementPage from "../pages/admin/UserManagementPage";
+import TheaterManagementPage from "../pages/admin/AdminTheaterManagement";
+import AdminTheaterManagement from "../pages/admin/AdminTheaterManagement";
+import SiteSettingsPage from "../pages/admin/SiteSettingsPage";
+import TransactionLogsPage from "../pages/admin/TransactionLogsPage";
+import ShowsManagement from "../pages/admin/ShowsManagement";
+import NotificationsManagement from "../pages/admin/NotificationsManagement";
 
 
 export const router = createBrowserRouter([
@@ -94,7 +109,39 @@ export const router = createBrowserRouter([
             { path: "analytics", element: <TheaterAnalytics /> },
             { path: "settings", element: <ExhibitorSettings /> },
             { path: "feedback", element: <CustomerFeedback /> },
-            { path: "manage-movies", element: <ManageMoviesInDB /> }
+            { path: "shows-history", element: <ShowsHistory /> },
+          ]
+        }
+      ]
+    },
+
+    
+    // ADMIN LOGIN PAGE
+    {
+      path: "/admin/login",
+      element: <AdminLoginPage />
+    },
+
+    // ADMIN PROTECTED AREA
+    {
+      path: "/admin",
+      element: <AdminProtectedRoutes />,
+      children: [
+        {
+          path: "",
+          element: <AdminLayout />,
+          children: [
+            { path: "dashboard", element: <AdminDashboardPage /> },
+            { path: "exhibitors", element: <ExhibitorManagementPage /> },
+            { path: "movies", element: <MovieManagementPage/> },
+            { path: "users", element: <UserManagementPage /> },
+            { path: "profile", element: <ProfileSettings /> },
+            { path: "reports", element: <ReportsPage /> },
+            { path: "theaters", element: <AdminTheaterManagement /> },
+            { path: "settings", element: <SiteSettingsPage /> },
+            { path: "analytics", element: <TransactionLogsPage /> },
+            { path: "shows", element: <ShowsManagement /> },
+            { path: "notifications", element: <NotificationsManagement /> },
           ]
         }
       ]

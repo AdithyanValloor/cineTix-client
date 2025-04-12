@@ -7,7 +7,7 @@ import { axiosInstance } from '../../config/axiosInstance';
 import { useNavigate } from 'react-router-dom'; 
 import { useSelector } from 'react-redux';
 
-export default function ExhibitorLogin() {
+export default function Adminlogin() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPass, setShowPass] = useState(false);
@@ -16,11 +16,12 @@ export default function ExhibitorLogin() {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
     const { userData } = useSelector((state) => state.user);
 
     useEffect(() => {
-        if (userData?.role === 'exhibitor') {
-            navigate('/exhibitor/dashboard', { replace: true }); 
+        if (userData?.role === 'admin') {
+            navigate('/admin/dashboard', { replace: true }); 
         }
     }, [userData, navigate]);
 
@@ -54,15 +55,15 @@ export default function ExhibitorLogin() {
         if (!validate()) return;
 
         try {
-            const response = await axiosInstance.post('/exhibitor/login', {
+            const response = await axiosInstance.post('/admin/login', {
                 email,
                 password,
             }, {withCredentials: true});
 
-            console.log('Exhibitor login success:', response.data);
+            console.log('Admin login success:', response.data);
             dispatch(saveUser(response?.data?.data));
             
-            navigate('/exhibitor/dashboard');
+            navigate('/admin/dashboard');
 
         } catch (err) {
             console.error('Login error:', err);
@@ -78,7 +79,7 @@ export default function ExhibitorLogin() {
         <div className='flex flex-col p-5 gap-5 pb-20'>
             <div className='w-full h-full flex items-end justify-center'>
                 <p className='text-lg sm:text-xl lg:text-2xl text-center'>
-                    Exhibitor Login
+                    Admin Login
                 </p>
             </div>
             <form onSubmit={handleSubmit} className='flex flex-col gap-9 w-full relative'>

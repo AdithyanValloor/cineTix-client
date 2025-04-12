@@ -1,6 +1,32 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
+import { axiosInstance } from '../../config/axiosInstance';
 
 function BookingManagementPage() {
+  const [bookings, setBookings] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const bookingsPerPage = 10;
+
+  const indexOfLastBooking = currentPage * bookingsPerPage;
+  const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
+  const currentBookings = bookings.slice(indexOfFirstBooking, indexOfLastBooking);
+
+  const totalPages = Math.ceil(bookings.length / bookingsPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const fetchBookings = async () => {
+    try {
+      const res = await axiosInstance.get('/exhibitor/bookings', { withCredentials: true });
+      setBookings(res.data);
+    } catch (err) {
+      console.error('Failed to fetch bookings:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchBookings();
+  }, []);
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -28,33 +54,64 @@ function BookingManagementPage() {
               </tr>
             </thead>
             <tbody>
-              {/* Sample rows - later you can map real data */}
-              <tr>
-                <td>1</td>
-                <td>Rahul S.</td>
-                <td>Leo</td>
-                <td>INOX Velachery</td>
-                <td>A1, A2, A3</td>
-                <td>2025-04-08</td>
-                <td>7:30 PM</td>
-                <td>₹750</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>Ananya K.</td>
-                <td>Dunki</td>
-                <td>PVR Phoenix</td>
-                <td>B1, B2</td>
-                <td>2025-04-09</td>
-                <td>5:00 PM</td>
-                <td>₹500</td>
-              </tr>
+              {currentBookings.length > 0 ? (
+                currentBookings.map((booking, index) => (
+                  <tr key={booking._id}>
+                    <td>{indexOfFirstBooking + index + 1}</td>
+                    <td>
+                      {booking.user?.firstName} {booking.user?.lastName}
+                    </td>
+                    <td>{booking.show?.movie?.title}</td>
+                    <td>{booking.show?.theater?.name}</td>
+                    <td>
+                      <div className="flex flex-col">
+                        {Array.from({ length: Math.ceil(booking.seats.length / 7) }, (_, rowIndex) => {
+                          const start = rowIndex * 7;
+                          const rowSeats = booking.seats.slice(start, start + 7);
+                          return (
+                            <span key={rowIndex}>
+                              {rowSeats.map((seat, i) => seat.seat).join(', ')}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </td>
+
+
+
+                    <td>{new Date(booking.show?.date).toLocaleDateString()}</td>
+                    <td>{booking.show?.time}</td>
+                    <td>₹{booking.seats.reduce((total, seat) => total + seat.price, 0)}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="8" className="text-center text-base-content/70">
+                    No bookings found.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex justify-center mt-4 space-x-2">
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i}
+                  className={`btn btn-sm ${currentPage === i + 1 ? 'btn-primary' : 'btn-outline'}`}
+                  onClick={() => paginate(i + 1)}
+                >
+                  {i + 1}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-export default BookingManagementPage
+export default BookingManagementPage;
