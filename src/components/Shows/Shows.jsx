@@ -126,7 +126,7 @@ function Shows() {
                 <div className="flex gap-2 items-center">
                   <ButtonFavourite />
                   <p className="text-xl font-bold">{theater.name}</p>
-                  <ButtonInfo />
+                  <ButtonInfo to={`/theater-details/${theater._id}`}/>
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2 sm:mt-0 sm:ml-auto">
                   {/* Check if 'shows' exists and is an array, then map over it */}

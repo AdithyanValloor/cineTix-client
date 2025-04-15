@@ -28,7 +28,6 @@ import TheaterManagement from "../pages/exhibitor/TheaterManagementPage";
 import MovieSchedule from "../pages/exhibitor/MovieSchedulePage";
 import BookingManagement from "../pages/exhibitor/BookingManagementPage";
 import RevenueReports from "../pages/exhibitor/RevenueReportsPage";
-import TheaterAnalytics from "../pages/exhibitor/TheaterAnalyticsPage";
 import ExhibitorSettings from "../pages/exhibitor/SettingsPage";
 import CustomerFeedback from "../pages/exhibitor/CustomerFeedbackPage";
 import ExhibitorLoginPage from "../pages/exhibitor/ExhibitorLoginPage";
@@ -43,12 +42,10 @@ import MovieManagementPage from "../pages/admin/MovieManagementPage";
 import ProfileSettings from "../pages/admin/ProfileSettings";
 import ReportsPage from "../pages/admin/ReportsPage";
 import UserManagementPage from "../pages/admin/UserManagementPage";
-import TheaterManagementPage from "../pages/admin/AdminTheaterManagement";
 import AdminTheaterManagement from "../pages/admin/AdminTheaterManagement";
 import SiteSettingsPage from "../pages/admin/SiteSettingsPage";
-import TransactionLogsPage from "../pages/admin/TransactionLogsPage";
-import ShowsManagement from "../pages/admin/ShowsManagement";
 import NotificationsManagement from "../pages/admin/NotificationsManagement";
+import TheaterDetailsPage from "../pages/user/TheaterDetailsPage";
 
 
 export const router = createBrowserRouter([
@@ -62,6 +59,7 @@ export const router = createBrowserRouter([
         { path: "seat-selection/:showId", element: <SeatSelectionPage /> },
         { path: "movies", element: <AllMoviesPage /> },
         { path: "theaters", element: <TheatersPage /> },
+        { path: "theater-details/:id", element: <TheaterDetailsPage /> },
         { path: "payment-success", element: <PaymentSuccess /> },
         { path: "payment-canceled", element: <PaymentCanceled /> },
   
@@ -106,7 +104,6 @@ export const router = createBrowserRouter([
             { path: "schedule", element: <MovieSchedule /> },
             { path: "bookings", element: <BookingManagement /> },
             { path: "reports", element: <RevenueReports /> },
-            { path: "analytics", element: <TheaterAnalytics /> },
             { path: "settings", element: <ExhibitorSettings /> },
             { path: "feedback", element: <CustomerFeedback /> },
             { path: "shows-history", element: <ShowsHistory /> },
@@ -139,8 +136,6 @@ export const router = createBrowserRouter([
             { path: "reports", element: <ReportsPage /> },
             { path: "theaters", element: <AdminTheaterManagement /> },
             { path: "settings", element: <SiteSettingsPage /> },
-            { path: "analytics", element: <TransactionLogsPage /> },
-            { path: "shows", element: <ShowsManagement /> },
             { path: "notifications", element: <NotificationsManagement /> },
           ]
         }

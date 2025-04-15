@@ -27,41 +27,18 @@ const MoviesCard = ({ id, title, rating, posterUrl }) => {
   );
 };
 
-export default function MoviesCarousel() {
+// MoviesCarousel.jsx
+export default function MoviesCarousel({ movies = [] }) {
   const swiperRef = useRef(null);
-  const [movies, setMovies] = useState([]);
   const [showPrev, setShowPrev] = useState(false);
   const [showNext, setShowNext] = useState(true);
   const [slidesPerView, setSlidesPerView] = useState(3);
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
 
   useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        // const response = await axiosInstance.get("/movies");
-        const response = await axiosInstance.get("/shows/active-movies");
-
-        console.log("Curently Running movie : ",response);
-        
-
-        if (Array.isArray(response.data.data)) {
-          setMovies(response.data.data);
-        } else {
-          setMovies([]);
-        }
-      } catch (error) {
-        console.error("Error fetching movies:", error);
-      }
-    };
-
-    fetchMovies();
-  }, []);
-
-  useEffect(() => {
     const handleResize = () => {
       setIsDesktop(window.innerWidth >= 1024);
     };
-
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -148,3 +125,4 @@ export default function MoviesCarousel() {
     </div>
   );
 }
+

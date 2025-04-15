@@ -1,7 +1,7 @@
 import { ChevronLeft, Heart, Info, X } from "lucide-react";
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 
@@ -79,11 +79,13 @@ export const ButtonFavourite = () => {
   )
 }
 
-export const ButtonInfo = () => {
+export const ButtonInfo = ({to}) => {
   return(
-    <button className="cursor-pointer p-2 hover:scale-105 transition-all duration-200 flex gap-1">
-      <Info/>
-      INFO
-    </button>
+    <Link to={to}>
+      <button className="cursor-pointer p-2 hover:scale-105 transition-all duration-200 flex gap-1">
+        <Info/>
+        INFO
+      </button>
+    </Link>
   )
 }

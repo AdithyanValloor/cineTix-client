@@ -4,6 +4,7 @@ const initialState = {
   userData: {},
   isUserAuth: false,
   role: null,
+  loading: false,
 };
 
 console.log("USER DATA",initialState.userData)
@@ -22,10 +23,16 @@ export const userSlice = createSlice({
       state.userData = {};
       state.role = null;
     },
+    startLoading: (state) => {
+      state.loading = true;
+    },
+    stopLoading: (state) => {
+      state.loading = false;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { saveUser, clearUser } = userSlice.actions
+export const { saveUser, clearUser, startLoading, stopLoading } = userSlice.actions
 
 export default userSlice.reducer

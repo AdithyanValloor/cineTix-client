@@ -35,34 +35,35 @@ function JoinCinetixPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto pt-24 p-6">
-      <h1 className="text-2xl font-bold mb-4">Join Cinetix as an Exhibitor</h1>
-      
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {["firstName", "lastName", "email", "password", "mobile", "company"].map((field) => (
-          <div key={field} className="flex items-center gap-4">
-            <label htmlFor={field} className="w-32 text-right font-medium capitalize">
-              {field === "phone" ? "Phone Number" : field}
-            </label>
-            <input
-              type={field === "password" ? "password" : "text"}
-              id={field}
-              name={field}
-              placeholder={field[0].toUpperCase() + field.slice(1)}
-              value={formData[field]}
-              onChange={handleChange}
-              className="flex-1 border p-2 border-gray-200 rounded-md"
-              required
-            />
+    <div className="max-w-md h-lvh mx-auto pt-24 p-6 ">
+      <div className='bg-base-200 shadow p-10 rounded-xl'>
+        <h1 className="text-2xl font-bold mb-4">Join Cinetix as an Exhibitor</h1>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {["firstName", "lastName", "email", "password", "mobile", "company"].map((field) => (
+            <div key={field} className="flex items-center gap-4">
+              <label htmlFor={field} className="w-32 text-right font-medium capitalize">
+                {field === "phone" ? "Phone Number" : field}
+              </label>
+              <input
+                type={field === "password" ? "password" : "text"}
+                id={field}
+                name={field}
+                placeholder={field[0].toUpperCase() + field.slice(1)}
+                value={formData[field]}
+                onChange={handleChange}
+                className="flex-1 border p-2 border-gray-200 rounded-md"
+                required
+              />
+            </div>
+          ))}
+          <div className="text-center">
+            <ButtonPrimary type={"submit"} text={"Register"}/>
           </div>
-        ))}
-        <div className="text-center">
-          <ButtonPrimary type={"submit"} text={"Register"}/>
-        </div>
-      </form>
+        </form>
 
 
-      {message && <p className="mt-4 text-center text-sm text-red-600">{message}</p>}
+        {message && <p className="mt-4 text-center text-sm text-red-600">{message}</p>}
+      </div>
     </div>
   );
 }

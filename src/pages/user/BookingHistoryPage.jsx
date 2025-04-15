@@ -16,10 +16,7 @@ function BookingHistoryPage() {
           withCredentials: true, 
         });
         
-        console.log("Bookings response : ",response.data.data);
-        
-
-        setBookings(response.data.data); // adapt if your API response is wrapped in data.booking or similar
+        setBookings(response.data.data); 
       } catch (err) {
         console.error(err);
         setError('Failed to load bookings. Please try again later.');
@@ -30,7 +27,6 @@ function BookingHistoryPage() {
 
     fetchBookings();
   }, []);
-
 
   const formatDateTime = (isoString) => {
     if (!isoString) return 'N/A';
@@ -72,15 +68,10 @@ function BookingHistoryPage() {
       hour12: true,
     });
   };
-  
-
-
-  console.log("Booking val : ",bookings);
-  
 
   return (
-    <div className="pt-24 pb-10 min-h-screen bg-base-100 md:px-28 text-base-content">
-      <h1 className="text-3xl font-bold mb-6">My Booking History</h1>
+    <div className="md:pt-24 pb-10 min-h-screen bg-base-100 pt-36 md:px-28 text-base-content">
+      <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center sm:text-left">My Booking History</h1>
 
       {loading ? (
         <p className="text-center mt-10">Loading your bookings...</p>
@@ -95,11 +86,10 @@ function BookingHistoryPage() {
           </Link>
         </div>
       ) : (
-  
         <div className="space-y-6">
           {bookings.map((booking) => (
             <div key={booking._id} className="bg-base-200 p-5 rounded-2xl shadow-md border border-base-300">
-              <div className="flex justify-between items-center mb-2">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
                 <h2 className="text-lg sm:text-xl md:text-2xl font-semibold">
                   Movie: {booking.movie?.title || "Unknown Movie"}
                 </h2>
@@ -135,8 +125,6 @@ function BookingHistoryPage() {
             </div>
           ))}
         </div>
-
-
       )}
     </div>
   );

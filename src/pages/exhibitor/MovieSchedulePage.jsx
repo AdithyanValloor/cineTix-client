@@ -161,7 +161,7 @@ function MovieSchedulePage() {
           <span>{message.text}</span>
         </div>
       )}
-
+  
       {/* Create Show */}
       <div className="bg-base-100 p-4 rounded-xl shadow">
         <div className="flex justify-between items-center mb-4">
@@ -170,11 +170,11 @@ function MovieSchedulePage() {
             {createFormVisible ? "Close" : "Add Show"}
           </button>
         </div>
-
+  
         {createFormVisible && (
           <form
             onSubmit={handleCreateShow}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
           >
             <FormSelect
               options={movies}
@@ -190,28 +190,32 @@ function MovieSchedulePage() {
             />
             <input
               type="date"
-              className="input input-bordered"
+              className="input input-bordered w-full"
               value={createForm.date}
               onChange={(e) => handleCreateChange("date", e.target.value)}
             />
             <input
               type="time"
-              className="input input-bordered"
+              className="input input-bordered w-full"
               value={createForm.time}
               onChange={(e) => handleCreateChange("time", e.target.value)}
             />
-            <button type="submit" className="btn btn-primary col-span-full md:col-span-2 lg:col-span-1" disabled={loading}>
+            <button
+              type="submit"
+              className="btn btn-primary col-span-full sm:col-span-2 md:col-span-1"
+              disabled={loading}
+            >
               {loading ? "Creating..." : "Create Show"}
             </button>
           </form>
         )}
       </div>
-
+  
       {/* Show List */}
       <div className="bg-base-100 p-4 rounded-xl shadow">
         <h2 className="text-lg font-semibold mb-4">Movie Schedule</h2>
         <div className="overflow-x-auto">
-          <table className="table table-zebra w-full">
+          <table className="table table-zebra w-full text-sm sm:text-base">
             <thead>
               <tr>
                 <th>#</th>
@@ -258,7 +262,7 @@ function MovieSchedulePage() {
                   {editingShowId === show._id && (
                     <tr className="bg-base-200">
                       <td colSpan="7">
-                        <form className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
+                        <form className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
                           <FormSelect
                             options={movies}
                             value={editForm.movie}
@@ -273,13 +277,13 @@ function MovieSchedulePage() {
                           />
                           <input
                             type="date"
-                            className="input input-bordered"
+                            className="input input-bordered w-full"
                             value={editForm.date}
                             onChange={(e) => handleEditChange("date", e.target.value)}
                           />
                           <input
                             type="time"
-                            className="input input-bordered"
+                            className="input input-bordered w-full"
                             value={editForm.time}
                             onChange={(e) => handleEditChange("time", e.target.value)}
                           />
@@ -293,7 +297,7 @@ function MovieSchedulePage() {
           </table>
         </div>
       </div>
-
+  
       {/* Delete Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
@@ -315,6 +319,8 @@ function MovieSchedulePage() {
       )}
     </div>
   );
+  
+  
 }
 
 export default MovieSchedulePage;

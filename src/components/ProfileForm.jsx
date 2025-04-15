@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import { ButtonPrimary } from "./Button/Button";
 
-const ProfileForm = ({ formData, handleChange, handleIdentitySelect, handleSubmit, changesMade, loading }) => {
+const ProfileForm = ({ formData, handleChange, handleIdentitySelect, handleSubmit, changesMade, loading, role = 'user' }) => {
   const [isButtonSticky, setIsButtonSticky] = useState(false);
   const buttonRef = useRef(null);
 
@@ -40,6 +40,10 @@ const ProfileForm = ({ formData, handleChange, handleIdentitySelect, handleSubmi
     { label: "State", name: "state", type: "text" },
   ];
 
+  if (role === "exhibitor") {
+    fields.splice(2, 0, { label: "Company", name: "company", type: "text" }); 
+  }
+
   return (
     <div className="max-w-2xl w-full px-10 pb-10 bg-base-100 py-1 relative">
       <h2 className="text-2xl font-bold my-4">Account Details</h2>
@@ -67,7 +71,7 @@ const ProfileForm = ({ formData, handleChange, handleIdentitySelect, handleSubmi
           <button
             type="button"
             className={`p-2 rounded-md cursor-pointer w-1/2 ${
-              formData.identity === "male" ? "bg-blue-500 text-white" : "bg-gray-200"
+              formData.identity === "male" ? "bg-blue-500 text-white" : "bg-gray-200 text-black"
             }`}
             onClick={() => handleIdentitySelect("male")}
           >
@@ -76,7 +80,7 @@ const ProfileForm = ({ formData, handleChange, handleIdentitySelect, handleSubmi
           <button
             type="button"
             className={`p-2 rounded-md cursor-pointer w-1/2 ${
-              formData.identity === "female" ? "bg-pink-500 text-white" : "bg-gray-200"
+              formData.identity === "female" ? "bg-pink-500 text-white" : "bg-gray-200 text-black"
             }`}
             onClick={() => handleIdentitySelect("female")}
           >

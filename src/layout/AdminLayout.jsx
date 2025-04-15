@@ -18,28 +18,28 @@ const AdminLayout = () => {
         toggleSidebar={() => setSidebarOpen((prev) => !prev)}
       />
 
-      {/* Layout Body */}
-      <div className="flex flex-1 pt-24 lg:pt-20 relative">
+      {/* Body */}
+      <div className="flex flex-1 pt-20">
         {/* Sidebar */}
-        <aside
-          className={`sticky top-20 h-[calc(100vh-5rem)] w-64 z-40 transition-transform duration-300 bg-base-300
-            ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} sm:translate-x-0`}
+        <div
+          className={`fixed inset-y-0 left-0 z-40 w-64 md:w-0 bg-base-300 transform transition-transform duration-300 sm:relative sm:translate-x-0
+            ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
         >
           <AdminSidebar onClose={() => setSidebarOpen(false)} />
-        </aside>
+        </div>
 
-        {/* Overlay for mobile */}
+        {/* Overlay */}
         {sidebarOpen && (
           <div
             className="fixed inset-0 bg-black/40 z-30 sm:hidden"
             onClick={() => setSidebarOpen(false)}
-          ></div>
+          />
         )}
 
         {/* Main Content */}
-        <main className="flex-1 p-4">
+        <div className="flex-1 p-4 sm:ml-64">
           <Outlet />
-        </main>
+        </div>
       </div>
     </div>
   );

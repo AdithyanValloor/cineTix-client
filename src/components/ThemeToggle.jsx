@@ -10,11 +10,12 @@ const ThemeToggle = () => {
     const newTheme = isDarkMode ? "dark" : "light";
     document.documentElement.setAttribute("data-theme", newTheme);
     localStorage.setItem("theme", newTheme);
-    Cookies.set("theme", newTheme, { expires: 7 }); // Store theme in cookies for 7 days
+    Cookies.set("theme", newTheme, { expires: 7 });
   }, [isDarkMode]);
 
   const toggleTheme = () => {
     setIsDarkMode((prev) => !prev);
+
   };
 
   return (

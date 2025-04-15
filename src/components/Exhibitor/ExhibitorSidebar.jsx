@@ -8,9 +8,8 @@ const ExhibitorSidebar = () => {
     { path: "/exhibitor/shows-history", label: "Shows History" },
     { path: "/exhibitor/bookings", label: "Booking Management" },
     { path: "/exhibitor/reports", label: "Revenue Reports" },
-    { path: "/exhibitor/analytics", label: "Theater Analytics" },
     { path: "/exhibitor/feedback", label: "Customer Feedback" },
-    { path: "/exhibitor/settings", label: "Settings" },
+    { path: "/exhibitor/settings", label: "Profile Settings" },
   ];
 
   return (

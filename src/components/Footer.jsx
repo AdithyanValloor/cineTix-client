@@ -4,7 +4,7 @@ import { LogoDark } from './Logo'
 function Footer() {
   return (
     <div>
-      <footer className="footer flex justify-between md:px-24 bg-base-200 border-b-1 text-base-content p-10">
+      <footer className="footer flex justify-between md:px-24 bg-base-300 border-b-1 text-base-content p-10">
         <nav>
             <h6 className="footer-title">Services</h6>
             <a className="link link-hover">Branding</a>

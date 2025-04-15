@@ -4,9 +4,12 @@ import MoviesCarousel from "../../components/Movie/MovieSlidesCarousel";
 import CastCarousel from "../../components/Movie/CastCarousel";
 import { axiosInstance } from "../../config/axiosInstance";
 import { Link, useParams } from "react-router-dom";
+import { BackButton } from "../Button/Button";
 
-const MovieBanner = ({ movie }) => {
+const MovieBanner = ({ movie, AddToWatchlist }) => {
   if (!movie) return null;
+
+  
 
   return (
     <div
@@ -15,6 +18,9 @@ const MovieBanner = ({ movie }) => {
     >
       <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent"></div>
 
+      <div className="bg-white absolute top-0 left-0 hover:scale-105 transition-all duration-300">
+        <BackButton/>
+      </div>
       <div className="relative flex gap-2 md:gap-5 w-full">
         <div className="w-[40%] min-w-[100px] max-w-[180px] md:max-w-[220px] flex-shrink-0">
           <img className="w-full h-auto rounded-lg shadow-lg" src={movie.posters[1] || movie.posters} alt={movie.title} />
@@ -23,10 +29,11 @@ const MovieBanner = ({ movie }) => {
         <div className="flex flex-col gap-1 justify-end md:gap-4 text-white z-10">
           <h1 className="text-2xl sm:text-xl md:text-4xl font-bold">{movie.title}</h1>
 
-          <Link to={"/user/reviews"}>
+          <Link to={`/user/reviews?movieId=${movie._id}&type=movie`}>
             <div className="w-fit self-start inline-flex rounded-lg flex-wrap gap-2 text-xs sm:text-sm md:text-base bg-neutral-900 p-2 cursor-pointer">
               <p className="text-white rounded-md inline-flex items-center gap-1 md:gap-2">
-                <Star className="size-3 md:size-5" fill="white" /> {movie.rating} ({movie.votes} votes){" "}
+                <Star className="size-3 md:size-5" fill="white" /> 
+                {movie.rating} ({movie.votes} votes)
                 <ChevronRight className="size-3" />
               </p>
               <button className="bg-red-200 px-2 text-black sm:px-2 py-1 rounded-md inline-flex cursor-pointer hover:scale-105 transition-all duration-200">
@@ -34,6 +41,7 @@ const MovieBanner = ({ movie }) => {
               </button>
             </div>
           </Link>
+
 
           <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm md:text-base text-white">
             <p className="px-2 sm:px-3 py-1 rounded-md inline-flex">{Math.floor(movie.duration / 60)}h {movie.duration % 60 !== 0 && ` ${movie.duration % 60}m`}</p>
@@ -43,12 +51,17 @@ const MovieBanner = ({ movie }) => {
             <p className="px-2 sm:px-3 py-1 rounded-md inline-flex">{movie.certification}</p>
           </div>
           
-          <div className="inline-block">
+          <div className="flex  gap-3">
             <Link  className="bg-red-600 text-white py-2 px-4 sm:px-6 rounded-lg hover:bg-red-500 transition-all duration-300 mt-2 sm:mt-3 inline-flex self-start hover:scale-105 cursor-pointer" to={`/shows/${movie._id}`}>
               <button>
                 Book Tickets
               </button>
             </Link>
+
+            <button onClick={AddToWatchlist}  className="bg-white text-black py-2 px-4 sm:px-6 rounded-lg  transition-all duration-300 mt-2 sm:mt-3 inline-flex self-start hover:scale-105 cursor-pointer">
+              Add to Watchlist
+            </button>
+
           </div>
         </div>
       </div>
@@ -70,6 +83,20 @@ function MovieDetails() {
   const {id} = useParams()
   const [movie, setMovie] = useState(null);
   const [cast, setCast] = useState([]);
+
+  const AddToWatchlist = async () => {
+    try {
+      const response = await axiosInstance.post(`/watchlist/add/${id}`);
+      alert(response.data.message || "Added to watchlist!");
+    } catch (error) {
+      if (error.response.status === 401) {
+        alert("Please login to use watchlist");
+        navigate("/login");
+      } else {
+        alert(error.response?.data?.message || "Something went wrong");
+      }
+    }
+  };
 
   useEffect(() => {
     async function fetchMovieData() {
@@ -111,7 +138,7 @@ function MovieDetails() {
 
   return (
     <div className="pt-[140px] md:pt-20">
-      <MovieBanner movie={movie} />
+      <MovieBanner movie={movie} AddToWatchlist={AddToWatchlist} />
       <MovieInfo title="About the Movie">{movie.description}</MovieInfo>
 
       <div className="px-5 bg-base-200 md:px-50 py-6">

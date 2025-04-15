@@ -1,6 +1,23 @@
-import React from "react";
-
+import React, { useEffect, useState } from "react";
+import { axiosInstance } from "../../config/axiosInstance";
 function RevenueReportsPage() {
+  const [reportData, setReportData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const res = await axiosInstance.get("/exhibitor/revenue-reports", { withCredentials: true });
+        setReportData(res.data);
+      } catch (err) {
+        console.error("Failed to fetch revenue reports", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReports();
+  }, []);
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -12,16 +29,8 @@ function RevenueReportsPage() {
 
         {/* Filter + Export */}
         <div className="flex gap-2 flex-wrap">
-          <input
-            type="date"
-            className="input input-bordered"
-            placeholder="Start Date"
-          />
-          <input
-            type="date"
-            className="input input-bordered"
-            placeholder="End Date"
-          />
+          <input type="date" className="input input-bordered" />
+          <input type="date" className="input input-bordered" />
           <button className="btn btn-primary">Export CSV</button>
           <button className="btn btn-outline">Export PDF</button>
         </div>
@@ -30,51 +39,39 @@ function RevenueReportsPage() {
       {/* Revenue Table */}
       <div className="bg-base-100 p-4 rounded-xl shadow">
         <h2 className="text-lg font-semibold mb-4">Revenue Summary</h2>
-        <div className="overflow-x-auto">
-          <table className="table table-zebra w-full">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Date</th>
-                <th>Theater</th>
-                <th>Movie</th>
-                <th>Show Time</th>
-                <th>Tickets Sold</th>
-                <th>Total Revenue</th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* Static data for now, later map dynamic data */}
-              <tr>
-                <td>1</td>
-                <td>2025-04-06</td>
-                <td>Sunshine Cinema</td>
-                <td>Avengers: Endgame</td>
-                <td>7:30 PM</td>
-                <td>124</td>
-                <td>₹24,800</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>2025-04-06</td>
-                <td>Galaxy Theater</td>
-                <td>Pathaan</td>
-                <td>5:00 PM</td>
-                <td>86</td>
-                <td>₹15,480</td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>2025-04-06</td>
-                <td>Cineplex</td>
-                <td>Jawan</td>
-                <td>8:15 PM</td>
-                <td>142</td>
-                <td>₹28,400</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+
+        {loading ? (
+          <p>Loading revenue data...</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="table table-zebra w-full">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Date</th>
+                  <th>Theater</th>
+                  <th>Movie</th>
+                  <th>Show Time</th>
+                  <th>Tickets Sold</th>
+                  <th>Total Revenue</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reportData.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.id}</td>
+                    <td>{item.date}</td>
+                    <td>{item.theater}</td>
+                    <td>{item.movie}</td>
+                    <td>{item.time}</td>
+                    <td>{item.tickets}</td>
+                    <td>₹{item.total.toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -12,6 +12,9 @@ function ProfilePage() {
   const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.user);
 
+  console.log("USER : ", userData);
+  
+
   const [formData, setFormData] = useState({
     name: "",
     firstName: "",
@@ -22,6 +25,7 @@ function ProfilePage() {
     identity: "",
     married: "",
     pincode: "",
+    company: "",
     address1: "",
     address2: "",
     landmark: "",
@@ -76,6 +80,7 @@ function ProfilePage() {
         identity: userData.identity || "",
         married: userData.married || "",
         pincode: userData.pincode || "",
+        company: userData.company || "",
         address1: userData.address1 || "",
         address2: userData.address2 || "",
         landmark: userData.landmark || "",
@@ -209,60 +214,84 @@ function ProfilePage() {
   };
 
   return (
-    <div className="pt-36 md:pt-24 pb-10 bg-base-200">
-      {showCropModal && (
-        <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-[5px] flex items-center justify-center">
-          <div className="w-96 max-w-lg bg-white p-2 rounded-lg shadow-lg">
-            <h1 className="text-center py-1 text-lg">Crop Profile Picture</h1>
-            {/* Cropper container with fixed aspect ratio */}
-            <div className="relative w-full h-[300px] bg-gray-100">
-              <Cropper
-                image={preview}
-                crop={crop}
-                zoom={zoom}
-                aspect={1}
-                onCropChange={setCrop}
-                onZoomChange={setZoom}
-                onCropComplete={onCropComplete}
-              />
+    
+    <div className="pb-10 w-full">
+        {showCropModal && (
+            <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center px-4">
+            <div className="w-full max-w-lg bg-base-100 rounded-xl shadow-xl p-4 space-y-4">
+                <h2 className="text-lg font-semibold text-center">Crop Profile Picture</h2>
+                <div className="relative w-full h-80 rounded-lg overflow-hidden bg-base-300">
+                <Cropper
+                    image={preview}
+                    crop={crop}
+                    zoom={zoom}
+                    aspect={1}
+                    onCropChange={setCrop}
+                    onZoomChange={setZoom}
+                    onCropComplete={onCropComplete}
+                />
+                </div>
+                <div className="flex justify-end gap-3 pt-2">
+                <ButtonPrimaryOutline onClick={() => setShowCropModal(false)} text="Cancel" />
+                <ButtonPrimary onClick={handleCropSave} text="Save" />
+                </div>
             </div>
-
-            <div className="flex  gap-3 mt-4">
-              <ButtonPrimaryOutline onClick={() => setShowCropModal(false)} text={"Cancel"}/>
-              <ButtonPrimary onClick={handleCropSave} text={"Save"}/>
             </div>
-          </div>
-        </div>
-      )}
+        )}
 
-
-      <div className="flex justify-center">
-        <div className="max-w-2xl w-full bg-base-300 rounded-lg shadow-xl">
-          <div className="bg-base-300  p-4 text-base-content md:rounded-t-lg flex items-center gap-5">
-            <label className="w-20 h-20 bg-base rounded-full overflow-hidden cursor-pointer relative group">
-              <div className="absolute bottom-0 w-full h-[25%] bg-base-content/45 opacity-0 group-hover:opacity-100 flex justify-center items-center transition-all">
-                <MdAddAPhoto className="text-base-300" />
-              </div>
-              <img src={preview} alt="Profile" className="w-full h-full object-cover" />
-              <input type="file" accept="image/*" onChange={handleProfilePicChange} className="absolute inset-0 opacity-0 cursor-pointer" />
+        <div className="mx-auto bg-base-100 rounded-xl shadow-md overflow-hidden">
+            {/* Header */}
+            <div className="bg-base-300 flex flex-col md:flex-row items-center gap-6 px-6 py-4">
+            <label className="relative w-24 h-24 rounded-full overflow-hidden group cursor-pointer ring ring-offset-2 ring-primary ring-offset-base-100">
+                <img src={preview} alt="Profile" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
+                <MdAddAPhoto className="text-white text-2xl" />
+                </div>
+                <input
+                type="file"
+                accept="image/*"
+                onChange={handleProfilePicChange}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+                />
             </label>
-            <h1 className="text-2xl lg:text-3xl">Hey, {userData?.firstName} {userData?.lastName}</h1>
-          </div>
+            <div>
+                <h1 className="text-2xl font-bold">Hey, {userData?.firstName} {userData?.lastName}</h1>
+                <p className="text-sm opacity-80">Manage your account details below</p>
+            </div>
+            </div>
 
-          <ProfileForm
-            formData={formData}
-            handleChange={handleChange}
-            handleIdentitySelect={handleIdentitySelect}
-            handleSubmit={handleSubmit}
-            changesMade={changesMade}
-            loading={loading}
-            buttonRef={buttonRef}
-            isFixed={isButtonOutOfView}
-          />
-          
+            {/* Form */}
+            <div className="p-6">
+            <ProfileForm
+                formData={formData}
+                handleChange={handleChange}
+                handleIdentitySelect={handleIdentitySelect}
+                handleSubmit={handleSubmit}
+                changesMade={changesMade}
+                loading={loading}
+                buttonRef={buttonRef}
+                isFixed={isButtonOutOfView}
+                role={'exhibitor'}
+            />
+            </div>
         </div>
-      </div>
-    </div>
+
+        {/* Fixed Save Button (floating) */}
+        {changesMade && isButtonOutOfView && (
+            <div className="fixed bottom-4 right-4 z-50">
+            <button
+                onClick={handleSubmit}
+                disabled={loading}
+                className="btn btn-primary shadow-lg"
+            >
+                {loading ? "Saving..." : "Save Changes"}
+            </button>
+            </div>
+        )}
+        </div>
+
+
+
   );
 }
 
