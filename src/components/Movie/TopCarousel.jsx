@@ -15,8 +15,7 @@ export default function ImageCarousel() {
   useEffect(() => {
     const fetchSlides = async () => {
       const { data } = await axiosInstance.get("/carousel");
-      console.log('RES :', data);
-      
+
       setSlides(data.data);
     };
     fetchSlides();

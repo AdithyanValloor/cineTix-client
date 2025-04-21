@@ -14,11 +14,6 @@ function Header() {
 
   const { isUserAuth, userData } = useSelector((state) => state.user);
 
-  console.log("IS AUTH:", isUserAuth);
-  console.log(userData);
-  
-  
-
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {

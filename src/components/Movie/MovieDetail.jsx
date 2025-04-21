@@ -104,17 +104,12 @@ function MovieDetails() {
       try {
 
         const response = await axiosInstance.get(`/movies/${id}`);
-        
-        console.log("Movies Data:", response.data.data); 
-  
+ 
         setMovie(response.data.data); 
         
       } catch (error) {
         console.error("Error fetching movies:", error);
       }
-
-      console.log("movie:", movie);
-            
 
       setMovie(movieData);
       setCast(castData);
@@ -128,13 +123,6 @@ function MovieDetails() {
 
   if (!movie) return <div className="text-center py-10">Loading...</div>;
 
-  console.log("MOVIE : ", movie.castAndCrew);
-
-  movie.castAndCrew.map((item) => {
-    console.log(item);
-    
-  })
-  
 
   return (
     <div className="pt-[140px] md:pt-20">
@@ -144,8 +132,11 @@ function MovieDetails() {
       <div className="px-5 bg-base-200 md:px-50 py-6">
         <h2 className="font-bold text-lg sm:text-2xl md:text-3xl py-2">Cast & Crew</h2>
         {/* <CastCarousel cast={cast} /> */}
+        <div className="flex gap-2 my-2">
+              <p className="font-semibold">{movie.director} :</p>
+              <p className="font-extralight">Director</p>
+            </div>
         { movie.castAndCrew.map((item) => {
-          console.log(item);
           return(
             <div className="flex gap-2 my-2">
               <p className="font-semibold">{item.name} :</p>

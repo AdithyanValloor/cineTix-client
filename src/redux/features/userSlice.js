@@ -7,8 +7,6 @@ const initialState = {
   loading: false,
 };
 
-console.log("USER DATA",initialState.userData)
-
 export const userSlice = createSlice({
   name: 'user',
   initialState,
