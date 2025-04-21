@@ -37,7 +37,7 @@ function MovieSchedulePage() {
     const fetchData = async () => {
       try {
         const [moviesRes, theatersRes, showsRes] = await Promise.all([
-          axiosInstance.get("/movies"),
+          axiosInstance.get("/movies/all-movies"),
           axiosInstance.get("/theater/list-theaters", { withCredentials: true }),
           axiosInstance.get("/shows/get-shows?type=upcoming", { withCredentials: true }),
         ]);

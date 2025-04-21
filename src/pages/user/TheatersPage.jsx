@@ -28,7 +28,7 @@ function TheatersPage() {
   
 
   return (
-    <div className="min-h-screen pt-24 px-4 md:px-20 bg-base-200">
+    <div className="min-h-screen pt-36 md:pt-26 px-4 md:px-20 bg-base-200">
       <h1 className="text-2xl md:text-4xl font-bold mb-6">Top Theaters</h1>
 
       {loading ? (

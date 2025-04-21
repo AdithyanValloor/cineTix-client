@@ -4,15 +4,24 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
+import { useEffect, useState } from "react";
+import { axiosInstance } from "../../config/axiosInstance";
 
-const slides = [
-  { image: "https://preview.redd.it/empuraan-l2e-official-poster-v0-qtod8xzitfke1.jpeg?auto=webp&s=c3f9aae4960cd164b22bc71ef3df13218140d5d3" },
-  { image: "https://static.toiimg.com/thumb/msid-113501216,width-1280,height-720,resizemode-4/113501216.jpg" },
-  { image: "https://s3.ap-south-1.amazonaws.com/media.thesouthfirst.com/wp-content/uploads/2025/02/A-poster-of-the-film-Officer-on-Duty.jpg" },
-  { image: "https://img.etimg.com/thumb/width-1600,height-900,imgsize-44570,resizemode-75,msid-118252966/magazines/panache/asif-alis-rekhachithram-ott-release-date-out-when-and-where-to-watch-the-highest-grossing-malayalam-film-of-2025.jpg" }
-];
+
 
 export default function ImageCarousel() {
+  const [slides, setSlides] = useState([]);
+
+  useEffect(() => {
+    const fetchSlides = async () => {
+      const { data } = await axiosInstance.get("/carousel");
+      console.log('RES :', data);
+      
+      setSlides(data.data);
+    };
+    fetchSlides();
+  }, []);
+
   return (
     <Swiper
       modules={[Navigation, Pagination, Scrollbar, A11y, Autoplay]}
@@ -35,7 +44,7 @@ export default function ImageCarousel() {
           <div className="bg-gray-800 rounded-lg h-full overflow-hidden shadow-lg">
             <img
               className="w-full h-full object-cover rounded-lg"
-              src={slide.image}
+              src={slide.imageUrl}
               alt={`Slide ${index + 1}`}
             />
           </div>

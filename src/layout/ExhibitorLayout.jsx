@@ -22,8 +22,8 @@ const ExhibitorLayout = () => {
       <div className="flex flex-1 pt-20">
         {/* Sidebar */}
         <div
-          className={`fixed inset-y-0 left-0 z-40 w-64 md:w-0 bg-base-300 transform transition-transform duration-300 sm:relative sm:translate-x-0
-            ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+          className={`fixed inset-y-0 left-0 z-40 w-0 md:w-0 bg-base-300 transform transition-transform duration-300 sm:translate-x-0
+            ${sidebarOpen ? "translate-x-0" : "-translate-x-100"}`}
         >
           <ExhibitorSidebar onClose={() => setSidebarOpen(false)} />
         </div>

@@ -16,20 +16,21 @@ function ShowsHistory() {
 
   const fetchPastShows = async () => {
     try {
-      const res = await axiosInstance.get(`/shows/get-shows?type=past`, {
+      const exhibitorData = JSON.parse(localStorage.getItem("exhibitor"));
+      const res = await axiosInstance.get(`/shows/get-shows?type=past&theater=${exhibitorData.theaterId}`, {
         withCredentials: true,
       });
-
+  
       const sortedShows = res.data.data.sort(
-        (a, b) =>
-          new Date(b.date + " " + b.time) - new Date(a.date + " " + a.time)
+        (a, b) => new Date(b.date + " " + b.time) - new Date(a.date + " " + a.time)
       );
-
+  
       setPastShows(sortedShows);
     } catch (err) {
       console.error("Error fetching past shows:", err);
     }
   };
+  
 
   useEffect(() => {
     fetchPastShows();

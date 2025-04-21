@@ -1,29 +1,67 @@
-import { ChevronDown, Search, X } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import { ChevronDown, Link, Search, X } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
 import { CloseButton } from "./Button/Button";
-import axios from "axios";
 import { axiosInstance } from "../config/axiosInstance";
+import clsx from "clsx";
+import debounce from "lodash.debounce";
+import { useNavigate } from "react-router-dom";
 
-// Search button component to trigger the search slide
+// Search button
 const SearchButton = ({ onClick }) => {
   return (
     <button
       onClick={onClick}
       className="p-2 cursor-pointer hover:scale-110 transition-all duration-200 hover:text-red-500"
+      title="Search ( / )"
     >
       <Search className="stroke-2 lg:stroke-1" />
     </button>
   );
 };
 
-// Search slide component that handles the search overlay
-const SearchSlide = ({ showSearch, onClose, searchQuery, setSearchQuery, searchResults }) => {
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
+const highlightText = (text, query) => {
+  if (!query) return text;
+  const parts = text.split(new RegExp(`(${query})`, "gi"));
+  return parts.map((part, index) =>
+    part.toLowerCase() === query.toLowerCase() ? (
+      <span key={index} className="font-semiboldbold">
+        {part}
+      </span>
+    ) : (
+      <span key={index}>{part}</span>
+    )
+  );
+};
+
+// Search slide
+const SearchSlide = ({
+  showSearch,
+  onClose,
+  searchQuery,
+  setSearchQuery,
+  searchResults,
+  loading,
+}) => {
+  const inputRef = useRef();
+  const navigate = useNavigate();
+
+  const handleClick = (item) => {
+    const path = item.type === "movie"
+      ? `/movie-details/${item._id}`
+      : `/theater-details/${item._id}`;
+    navigate(path);
+    onClose()
   };
+  
+
+  useEffect(() => {
+    if (showSearch) {
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
+  }, [showSearch]);
 
   return (
-    <div>
+    <>
       {showSearch && (
         <div
           className="fixed inset-0 bg-black/50 backdrop-blur-[5px] z-40"
@@ -31,7 +69,10 @@ const SearchSlide = ({ showSearch, onClose, searchQuery, setSearchQuery, searchR
         ></div>
       )}
       <div
-        className={`bg-base-100 base-content shadow-md w-full md:w-1/2 lg:w-1/4 h-full fixed top-0 right-0 transition-transform duration-500 z-50 ${showSearch ? "translate-x-0" : "translate-x-full"}`}
+        className={clsx(
+          "bg-base-100 base-content shadow-md w-full md:w-1/2 lg:w-1/4 h-full fixed top-0 right-0 transition-transform duration-500 z-50",
+          showSearch ? "translate-x-0" : "translate-x-full"
+        )}
       >
         <div className="flex items-center justify-between p-5 border-b border-gray-400">
           <CloseButton onClick={onClose} />
@@ -47,74 +88,142 @@ const SearchSlide = ({ showSearch, onClose, searchQuery, setSearchQuery, searchR
               name="search-box"
               id="search-box"
               type="text"
-              value={searchQuery} 
-              onChange={handleSearchChange} 
-              placeholder="Search "
+              value={searchQuery}
+              ref={inputRef}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search..."
               className="font-light p-2 pl-4 w-full rounded-full border border-gray-300 focus:outline-none"
             />
           </div>
-          
-          {/* Display search results */}
-          {searchResults && searchResults.length > 0 ? (
-            <div className="mt-4">
-              <h3 className="font-semibold">Search Results:</h3>
-              <div>
-                {searchResults.map((item) => (
-                  <div key={item._id} className="p-2 border-b">
-                    <p>{item.name || item.title}</p>
-                  </div>
-                ))}
+
+          <div className="overflow-y-auto max-h-[70vh]">
+            {loading && (
+              <p className="text-center text-sm text-gray-400 animate-pulse">
+                Searching...
+              </p>
+            )}
+            {!loading && searchQuery && searchResults.length === 0 && (
+              <p className="text-center text-gray-500 mt-10 animate-pulse">
+                No results found
+              </p>
+            )}
+            {!loading &&
+              searchResults.map((item) => (
+              <div
+                key={item._id}
+                className="p-2 px-3 bg-base-200 mb-1 cursor-pointer hover:bg-base-300 transition-all"
+                onClick={() => handleClick(item)}
+              >
+                <p className="text-sm">
+                  {highlightText(item.title || item.name, searchQuery)}
+                </p>
+                <span className="text-xs text-white bg-blue-500 px-2 py-0.5 rounded-full mt-1 inline-block">
+                  {item.type === "movie" ? "Movie" : "Theater"}
+                </span>
               </div>
-            </div>
-          ) : (
-            searchQuery && <p>No results found</p>
-          )}
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
-// Main Search component that holds the logic for toggling the search slide
 const SearchComponent = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  
 
-  // Function to fetch search results from the backend
   const searchMoviesAndTheaters = async (query) => {
     try {
-      const movieResponse = await axiosInstance.get(`/movies?query=${query}`);
-      const theaterResponse = await axiosInstance.get(`/theater/all-theaters-query?query=${query}`);
-      setSearchResults([
-        ...movieResponse.data.data,
-        ...theaterResponse.data.data,
-      ]);
+      setLoading(true);
+      const trimmedQuery = query.trim();
+      const movieResponse = await axiosInstance.get(
+        `/movies?query=${encodeURIComponent(trimmedQuery)}`
+      );
+      const theaterResponse = await axiosInstance.get(
+        `/theater/all-theaters-query?query=${encodeURIComponent(trimmedQuery)}`
+      );
+      const combinedResults = [
+        ...movieResponse.data.data.map((item) => ({ ...item, type: "movie" })),
+        ...theaterResponse.data.data.map((item) => ({
+          ...item,
+          type: "theater",
+        })),
+      ];
+      setSearchResults(combinedResults);
     } catch (error) {
       console.error("Error fetching search results:", error);
+      setSearchResults([]);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Use effect to trigger search on query change
+  const handleClose = () => {
+    setShowSearch(false);
+    setSearchQuery("");
+    setSearchResults([]);
+  };
+  
+
+  // Debounced search
   useEffect(() => {
-    if (searchQuery) {
-      searchMoviesAndTheaters(searchQuery);
-    } else {
-      setSearchResults([]); // Clear results when query is empty
-    }
+    const debouncedSearch = debounce(() => {
+      if (searchQuery.trim()) {
+        searchMoviesAndTheaters(searchQuery.trim());
+      } else {
+        setSearchResults([]);
+      }
+    }, 400);
+
+    debouncedSearch();
+    return () => debouncedSearch.cancel();
   }, [searchQuery]);
 
-  const handleSearchSlide = () => setShowSearch((prev) => !prev);
+  // Keyboard shortcut to open search with "/"
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.key === "/" && !showSearch) {
+        e.preventDefault();
+        setShowSearch(true);
+      } else if (e.key === "Escape" && showSearch) {
+        handleClose();
+      }
+    };
+  
+    const handlePopState = () => {
+      if (showSearch) {
+        handleClose();
+      }
+    };
+  
+    // Listen to keydown events for "/" and "Escape"
+    window.addEventListener("keydown", handleKeyPress);
+  
+    // Listen for "back" event on mobile (browser history changes)
+    window.addEventListener("popstate", handlePopState);
+  
+    // Clean up the event listeners
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [showSearch]);
+  
 
   return (
     <>
-      <SearchButton onClick={handleSearchSlide} />
+      <SearchButton onClick={() => setShowSearch(true)} />
       <SearchSlide
         showSearch={showSearch}
-        onClose={handleSearchSlide}
+        onClose={handleClose}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         searchResults={searchResults}
+        loading={loading}
       />
     </>
   );

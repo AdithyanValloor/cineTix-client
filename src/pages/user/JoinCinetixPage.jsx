@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { axiosInstance } from '../../config/axiosInstance';
 import { ButtonPrimary } from '../../components/Button/Button';
 
 function JoinCinetixPage() {
-  
-  const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -17,6 +13,7 @@ function JoinCinetixPage() {
   });
 
   const [message, setMessage] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleChange = (e) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -25,18 +22,31 @@ function JoinCinetixPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axiosInstance.post('/exhibitor/register', formData, { withCredentials: true });
-      setMessage(res.data.message || 'Exhibitor registered successfully');
+      const res = await axiosInstance.post('/exhibitor/register', formData, {
+        withCredentials: true,
+      });
 
-      navigate('/exhibitor/dashboard');
+      setMessage('Registration successful! Please wait for admin approval.');
+      setIsSuccess(true);
+
+      setFormData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        mobile: '',
+        company: '',
+      });
+
     } catch (err) {
       setMessage(err.response?.data?.message || 'Something went wrong');
+      setIsSuccess(false);
     }
   };
 
   return (
-    <div className="max-w-md h-lvh mx-auto pt-24 p-6 ">
-      <div className='bg-base-200 shadow p-10 rounded-xl'>
+    <div className="max-w-md h-lvh mx-auto pt-24 p-6">
+      <div className="bg-base-200 shadow p-10 rounded-xl">
         <h1 className="text-2xl font-bold mb-4">Join Cinetix as an Exhibitor</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           {["firstName", "lastName", "email", "password", "mobile", "company"].map((field) => (
@@ -57,12 +67,15 @@ function JoinCinetixPage() {
             </div>
           ))}
           <div className="text-center">
-            <ButtonPrimary type={"submit"} text={"Register"}/>
+            <ButtonPrimary type={"submit"} text={"Register"} />
           </div>
         </form>
 
-
-        {message && <p className="mt-4 text-center text-sm text-red-600">{message}</p>}
+        {message && (
+          <p className={`mt-4 text-center text-sm ${isSuccess ? 'text-green-600' : 'text-red-600'}`}>
+            {message}
+          </p>
+        )}
       </div>
     </div>
   );

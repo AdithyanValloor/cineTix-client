@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 
-const ExhibitorSidebar = () => {
+const ExhibitorSidebar = ({onClose}) => {
   const links = [
     { path: "/exhibitor/dashboard", label: "Dashboard" },
     { path: "/exhibitor/theaters", label: "Manage Theaters" },
@@ -20,6 +20,7 @@ const ExhibitorSidebar = () => {
           <NavLink
             key={link.path}
             to={link.path}
+            onClick={onClose}
             className={({ isActive }) =>
               isActive
                 ? "text-red-500 font-semibold"

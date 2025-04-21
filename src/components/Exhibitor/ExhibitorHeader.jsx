@@ -68,6 +68,8 @@ function ExhibitorHeader({ headline, toggleSidebar }) {
         </Link>
       </div>
 
+      
+
       {/* Theme Toggle + Logout */}
       <div className="absolute right-4 flex items-center gap-2">
         <ThemeToggle />

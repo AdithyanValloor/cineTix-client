@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { axiosInstance } from '../../config/axiosInstance';
 import WarningModal from './WarningModal';
+import { ManageUsersBTN } from './ManageUsersBTN';
 
 
 function ManageUsers({userRole}) {
@@ -221,6 +222,9 @@ function ManageUsers({userRole}) {
       <div className="bg-base-200 p-6 rounded-xl shadow">
         <h1 className="text-2xl font-bold">User Management</h1>
         <p className="text-base-content/70 mt-1">Manage all users of your platform.</p>
+
+          <ManageUsersBTN/>
+
       </div>
 
       {/* DaisyUI Alert */}
@@ -268,59 +272,111 @@ function ManageUsers({userRole}) {
                         <span className="text-gray-500">Inactive</span>
                       )}
                     </td>
-                    <td className="flex flex-wrap gap-2">
-                      {/* Permanent Ban / Unban */}
-                      {user.isBanned && user.banType === 'permanent' ? (
+                    <td className="flex flex-col gap-2">
+                      {/* Action buttons */}
+                      <div className="flex flex-wrap sm:flex-nowrap gap-2">
+                        {/* Permanent Ban / Unban */}
+                        {user.isBanned && user.banType === 'permanent' ? (
+                          <button
+                            className="btn btn-xs sm:btn-sm btn-warning"
+                            onClick={() => handleUnBan(user._id)}
+                          >
+                            Unban (Permanent)
+                          </button>
+                        ) : (
+                          <button
+                            className="btn btn-xs sm:btn-sm btn-warning"
+                            onClick={() => handleBanPer(user._id)}
+                          >
+                            Permanent Ban
+                          </button>
+                        )}
+
+                        {/* Temporary Ban / Unban */}
+                        {user.isBanned && user.banType === 'temporary' ? (
+                          <button
+                            className="btn btn-xs sm:btn-sm btn-warning"
+                            onClick={() => handleUnbanUser(user._id)}
+                          >
+                            Unban (Temporary)
+                          </button>
+                        ) : (
+                          <button
+                            className="btn btn-xs sm:btn-sm btn-warning"
+                            onClick={() => handleBanTem(user._id)}
+                          >
+                            Temporary Ban
+                          </button>
+                        )}
+
+                        {/* Deactivate / Reactivate */}
                         <button
-                          className="btn btn-sm btn-warning"
-                          onClick={() => handleUnBan(user._id)}
+                          className="btn btn-xs sm:btn-sm btn-info"
+                          onClick={() =>
+                            !user.isActive
+                              ? handleReactivateConfirm(user._id)
+                              : handleDeactivate(user._id)
+                          }
                         >
-                          Unban (Permanent)
+                          {user.isActive ? 'Deactivate' : 'Reactivate'}
                         </button>
-                      ) : (
+
+                        {/* Delete */}
                         <button
-                          className="btn btn-sm btn-warning"
-                          onClick={() => handleBanPer(user._id)}
+                          className="btn btn-xs sm:btn-sm btn-error"
+                          onClick={() => handleDelete(user._id)}
                         >
-                          Permanent Ban
+                          Delete
                         </button>
+                      </div>
+
+                      {/* Pending Update Request block */}
+                      {user.pendingUpdate && (
+                        <div className="mt-2 border p-3 rounded bg-base-200 text-xs">
+                          <p className="font-semibold text-sm mb-2">Update Request</p>
+                          {user.pendingUpdate.firstName && (
+                            <p>
+                              <span className="font-medium">Name:</span>{' '}
+                              {user.pendingUpdate.firstName}
+                            </p>
+                          )}
+                          {user.pendingUpdate.mobile && (
+                            <p>
+                              <span className="font-medium">Mobile:</span>{' '}
+                              {user.pendingUpdate.mobile}
+                            </p>
+                          )}
+                          {user.pendingUpdate.identity && (
+                            <p>
+                              <span className="font-medium">ID:</span>{' '}
+                              <a
+                                href={user.pendingUpdate.identity}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="link link-primary"
+                              >
+                                View Identity
+                              </a>
+                            </p>
+                          )}
+                          <div className="flex flex-col sm:flex-row gap-2 mt-2">
+                            <button
+                              className="btn btn-xs sm:btn-sm btn-success"
+                              onClick={() => handleApproveUpdate(user._id)}
+                            >
+                              Approve
+                            </button>
+                            <button
+                              className="btn btn-xs sm:btn-sm btn-error"
+                              onClick={() => handleRejectUpdate(user._id)}
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        </div>
                       )}
-
-                      {/* Temporary Ban / Unban */}
-                      {user.isBanned && user.banType === 'temporary' ? (
-                        <button
-                          className="btn btn-sm btn-warning"
-                          onClick={() => handleUnbanUser(user._id)}
-                        >
-                          Unban (Temporary)
-                        </button>
-                      ) : (
-                        <button
-                          className="btn btn-sm btn-warning"
-                          onClick={() => handleBanTem(user._id)}
-                        >
-                          Temporary Ban
-                        </button>
-                      )}
-
-                      {/* Deactivate / Reactivate */}
-                      <button
-                        className="btn btn-sm btn-info"
-                        onClick={() =>
-                          !user.isActive ? handleReactivateConfirm(user._id) : handleDeactivate(user._id)
-                        }
-                      >
-                        {user.isActive ? 'Deactivate' : 'Reactivate'}
-                      </button>
-
-                      {/* Delete */}
-                      <button
-                        className="btn btn-sm btn-error"
-                        onClick={() => handleDelete(user._id)}
-                      >
-                        Delete
-                      </button>
                     </td>
+
                   </tr>
                 ))
               ) : (

@@ -46,6 +46,8 @@ import AdminTheaterManagement from "../pages/admin/AdminTheaterManagement";
 import SiteSettingsPage from "../pages/admin/SiteSettingsPage";
 import NotificationsManagement from "../pages/admin/NotificationsManagement";
 import TheaterDetailsPage from "../pages/user/TheaterDetailsPage";
+import ManageCarousel from "../pages/admin/ManageCarousel";
+import AboutUs from "../pages/user/AboutUs";
 
 
 export const router = createBrowserRouter([
@@ -54,6 +56,7 @@ export const router = createBrowserRouter([
       element: <RootLayout />,
       children: [
         { path: "", element: <HomePage /> },
+        { path: "/about", element: <AboutUs /> },
         { path: "movie-details/:id", element: <MovieDetailsPage /> },
         { path: "shows/:movieId", element: <ShowsAndTheaterPage /> },
         { path: "seat-selection/:showId", element: <SeatSelectionPage /> },
@@ -133,6 +136,7 @@ export const router = createBrowserRouter([
             { path: "movies", element: <MovieManagementPage/> },
             { path: "users", element: <UserManagementPage /> },
             { path: "profile", element: <ProfileSettings /> },
+            { path: "carousel", element: <ManageCarousel /> },
             { path: "reports", element: <ReportsPage /> },
             { path: "theaters", element: <AdminTheaterManagement /> },
             { path: "settings", element: <SiteSettingsPage /> },

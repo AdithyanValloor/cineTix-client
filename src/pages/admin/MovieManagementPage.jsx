@@ -30,12 +30,12 @@ function MovieManagementPage() {
 
   const fetchMovies = async () => {
     try {
-      const res = await axiosInstance.get('/movies');
+      const res = await axiosInstance.get('/movies/all-movies');
 
       console.log("RES : ", res.data.data);
       
 
-      setMovies(res.data.data);
+      setMovies(res.data.data ? res.data.data : []);
     } catch (err) {
       toast.error('Failed to fetch movies');
     }

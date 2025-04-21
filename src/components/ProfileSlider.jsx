@@ -33,7 +33,6 @@ const MenuItem = ({onClick, to, icon: Icon, title, description }) => (
     </li>
 );
   
-
 const ProfileSlide = ({ profilePicture, firstName, lastName, showSearch, onClose }) => {
 
   const dispatch = useDispatch()
