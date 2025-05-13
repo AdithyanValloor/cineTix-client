@@ -1,44 +1,46 @@
 import React, { useEffect, useState } from "react";
 import { axiosInstance } from "../../config/axiosInstance";
+import { useSelector } from "react-redux";
 
 function ShowsHistory() {
-  const [pastShows, setPastShows] = useState([]);
+  const { isUserAuth, userData } = useSelector((state) => state.user);
+  const [allShows, setAllShows] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const showsPerPage = 20;
 
   const indexOfLastShow = currentPage * showsPerPage;
   const indexOfFirstShow = indexOfLastShow - showsPerPage;
-  const currentShows = pastShows.slice(indexOfFirstShow, indexOfLastShow);
-
-  const totalPages = Math.ceil(pastShows.length / showsPerPage);
+  const currentShows = allShows.slice(indexOfFirstShow, indexOfLastShow);
+  const totalPages = Math.ceil(allShows.length / showsPerPage);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const fetchPastShows = async () => {
+  const fetchAllExhibitorShows = async () => {
     try {
-      const exhibitorData = JSON.parse(localStorage.getItem("exhibitor"));
-      const res = await axiosInstance.get(`/shows/get-shows?type=past&theater=${exhibitorData.theaterId}`, {
-        withCredentials: true,
+      const res = await axiosInstance.get("/shows/exhibitor-shows", {
+        withCredentials: true, // assuming auth uses cookies
       });
-  
+
       const sortedShows = res.data.data.sort(
-        (a, b) => new Date(b.date + " " + b.time) - new Date(a.date + " " + a.time)
+        (a, b) =>
+          new Date(b.date + " " + b.time) - new Date(a.date + " " + a.time)
       );
-  
-      setPastShows(sortedShows);
+
+      setAllShows(sortedShows);
     } catch (err) {
-      console.error("Error fetching past shows:", err);
+      console.error("Error fetching exhibitor shows:", err);
     }
   };
-  
 
   useEffect(() => {
-    fetchPastShows();
-  }, []);
+    if (isUserAuth && userData?.role === "exhibitor") {
+      fetchAllExhibitorShows();
+    }
+  }, [isUserAuth, userData]);
 
   return (
     <div className="bg-base-100 p-4 rounded-xl shadow mt-6">
-      <h2 className="text-lg font-semibold mb-4">Show History</h2>
+      <h2 className="text-lg font-semibold mb-4">All Shows</h2>
 
       <div className="overflow-x-auto">
         <table className="table table-zebra w-full">
@@ -67,7 +69,7 @@ function ShowsHistory() {
             ) : (
               <tr>
                 <td colSpan="6" className="text-center text-gray-400">
-                  No past shows found.
+                  No shows found.
                 </td>
               </tr>
             )}
@@ -80,7 +82,9 @@ function ShowsHistory() {
             {Array.from({ length: totalPages }, (_, i) => (
               <button
                 key={i}
-                className={`btn btn-sm ${currentPage === i + 1 ? 'btn-primary' : 'btn-outline'}`}
+                className={`btn btn-sm ${
+                  currentPage === i + 1 ? "btn-primary" : "btn-outline"
+                }`}
                 onClick={() => paginate(i + 1)}
               >
                 {i + 1}

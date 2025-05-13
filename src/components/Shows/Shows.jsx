@@ -11,7 +11,6 @@ import dayjs from "dayjs";
 
 function Shows() {
   const { movieId } = useParams();
-  // const navigate = useNavigate(); // Initialize useNavigate
   const [movie, setMovie] = useState(null);
   const [theatersWithShows, setTheatersWithShows] = useState([]);
   const [selectedDate, setSelectedDate] = useState(dayjs().format("YYYY-MM-DD")); 
